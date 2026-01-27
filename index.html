@@ -3,116 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة سين جيم - النسخة النهائية</title>
+    <title>لعبة سين جيم</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --gold: #fcc201; --blue: #060ce9; --dark-blue: #02056e; --white: #ffffff; }
-        body { background: var(--dark-blue); color: var(--white); font-family: sans-serif; margin: 0; overflow: hidden; }
-        #setup-screen { position: fixed; inset: 0; background: var(--dark-blue); z-index: 1000; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; }
-        .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; width: 100%; max-width: 1000px; margin-top: 20px; }
-        .cat-box { background: #000; border: 2px solid var(--gold); padding: 15px; text-align: center; cursor: pointer; border-radius: 5px; }
+        body { background: var(--dark-blue); color: var(--white); font-family: sans-serif; margin: 0; text-align: center; }
+        .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 20px; max-width: 500px; margin: auto; }
+        .cat-box { background: #000; border: 2px solid var(--gold); padding: 15px; cursor: pointer; border-radius: 8px; font-size: 1rem; }
         .cat-box.active { background: var(--gold); color: #000; font-weight: bold; }
-        .header { height: 10vh; display: flex; justify-content: space-around; align-items: center; background: #000; border-bottom: 3px solid var(--gold); font-size: 1.2rem; }
-        .board { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; height: 90vh; padding: 5px; box-sizing: border-box; }
-        .column { display: grid; grid-template-rows: 0.5fr repeat(6, 1fr); gap: 5px; }
-        .cat-title { background: var(--blue); border: 2px solid #000; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; font-size: 0.9rem; }
-        .cell { background: var(--blue); border: 2px solid #000; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--gold); font-weight: bold; cursor: pointer; }
-        .cell.used { color: transparent; cursor: default; }
-        .modal { position: fixed; inset: 0; background: var(--blue); display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; z-index: 500; }
-        .btn { padding: 10px 20px; font-size: 1rem; cursor: pointer; border: none; font-weight: bold; margin: 5px; border-radius: 5px; }
+        .btn { background: var(--gold); color: #000; padding: 15px 30px; border: none; font-weight: bold; border-radius: 10px; margin-top: 20px; cursor: pointer; font-size: 1.2rem; }
+        .header { background: #000; padding: 10px; border-bottom: 3px solid var(--gold); display: flex; justify-content: space-around; }
+        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 10px; }
+        .cell { background: var(--blue); border: 2px solid #000; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--gold); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="setup-screen">
-    <h1 style="color: var(--gold);">اختر 6 فئات لبدء اللعبة</h1>
-    <div id="cat-container" class="cat-grid"></div>
-    <button id="start-btn" class="btn" style="background:var(--gold); display:none; margin-top: 20px;" onclick="beginGame()">ابدأ اللعبة الآن</button>
+    <h2 style="color: var(--gold); margin-top: 30px;">اختر 6 فئات لبدء اللعبة</h2>
+    <div id="cat-container" class="cat-grid">
+        </div>
+    <button id="start-btn" class="btn" style="display:none;" onclick="beginGame()">ابدأ اللعبة الآن</button>
 </div>
 
 <div id="main-game" style="display:none;">
     <div class="header">
         <div>فريق 1: <span id="score1">0</span></div>
-        <div id="turn-txt" style="color: var(--gold);">دور: فريق 1</div>
         <div>فريق 2: <span id="score2">0</span></div>
     </div>
     <div id="game-board" class="board"></div>
 </div>
 
-<div id="q-modal" class="modal">
-    <div id="time-display" style="font-size: 3rem; color: red;">20</div>
-    <div id="q-content" style="font-size: 2rem; margin: 20px 0;"></div>
-    <div id="a-content" style="display:none; color:var(--gold); font-size:1.5rem; margin-bottom:20px;"></div>
-    <div id="q-actions"><button class="btn" style="background:var(--gold);" onclick="showAnswer()">كشف الإجابة</button></div>
-    <div id="score-actions" style="display:none;">
-        <button class="btn" style="background:green; color:white;" onclick="givePoints(1)">فريق 1 ✅</button>
-        <button class="btn" style="background:green; color:white;" onclick="givePoints(2)">فريق 2 ✅</button>
-        <button class="btn" style="background:grey; color:white;" onclick="exitQ()">خطأ ❌</button>
-    </div>
-</div>
-
 <script>
-    const S_URL = 'https://jbwzdqpunqjplsbuqzyz.supabase.co';
-    const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impid3pkcXB1bnFqcGxzYnVxenl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MDM5MjksImV4cCI6MjA4NTA3OTkyOX0.Suo1taENL5AUXolijAl8ytX9F8THgxPKFsoejo0NHXY';
-    const G_API = 'AIzaSyB_D649NZ6bMTB98CEpV1gcSzZiaz4uuZk';const _client = supabase.createClient(S_URL, S_KEY);
-    let selected = []; let scores = {1: 0, 2: 0}; let turn = 1; let activeVal = 0; let clock;
+    // بياناتك التي تعمل
+    const G_API = 'AIzaSyB_D649NZ6bMTB98CEpV1gcSzZiaz4uuZk';
+    
+    const categories = ["باب الحارة", "رياضة", "تاريخ", "عواصم", "أمثال", "أنمي", "فضاء", "علوم", "سيارات", "أكلات"];
+    let selected = [];
 
-    const categories = ["باب الحارة", "رياضة عربية", "تاريخ إسلامي", "عواصم", "أمثال شعبية", "أنمي", "فضاء", "علوم", "سيارات", "أكلات", "دول وأعلام", "اختراعات", "مشاهير", "ألعاب فيديو", "تقنية", "شعراء", "حيوانات", "صحة", "لغات", "كيمياء", "فيزياء", "موسيقى", "قرآن كريم", "أساطير", "دراما سورية", "جغرافيا", "ماركات", "ألغاز", "سينما", "معلومات عامة"];
-
-    const container = document.getElementById('cat-container');
-    categories.forEach(c => {
-        let box = document.createElement('div'); box.className = 'cat-box'; box.innerText = c;
-        box.onclick = () => {
-            if(box.classList.contains('active')) { box.classList.remove('active'); selected = selected.filter(x => x !== c); }
-            else if(selected.length < 6) { box.classList.add('active'); selected.push(c); }
-            document.getElementById('start-btn').style.display = selected.length === 6 ? 'block' : 'none';
-        };
-        container.appendChild(box);
-    });
-
-    function beginGame() { document.getElementById('setup-screen').style.display = 'none'; document.getElementById('main-game').style.display = 'block'; createBoard(); }
-
-    function createBoard() {
-        const board = document.getElementById('game-board');
-        selected.forEach(cat => {
-            let col = document.createElement('div'); col.className = 'column';
-            col.innerHTML = <div class="cat-title">${cat}</div>;
-            [200, 200, 400, 400, 600, 600].forEach(val => {
-                let cell = document.createElement('div'); cell.className = 'cell'; cell.innerText = val;
-                cell.onclick = () => launchQ(cat, val, cell); col.appendChild(cell);
-            });
-            board.appendChild(col);
+    // وظيفة إظهار الفئات فوراً عند فتح الصفحة
+    function showCats() {
+        const container = document.getElementById('cat-container');
+        categories.forEach(c => {
+            let box = document.createElement('div');
+            box.className = 'cat-box';
+            box.innerText = c;
+            box.onclick = () => {
+                if(box.classList.contains('active')) {
+                    box.classList.remove('active');
+                    selected = selected.filter(x => x !== c);
+                } else if(selected.length < 6) {
+                    box.classList.add('active');
+                    selected.push(c);
+                }
+                document.getElementById('start-btn').style.display = selected.length === 6 ? 'inline-block' : 'none';
+            };
+            container.appendChild(box);
         });
     }
 
-    async function launchQ(cat, val, el) {
-        if(el.classList.contains('used')) return;
-        activeVal = val; el.classList.add('used');
-        document.getElementById('q-modal').style.display = 'flex';
-        document.getElementById('q-content').innerText = "جاري طلب السؤال من Gemini...";
-        
-        try {
-            const p = أعطني سؤالاً واحداً عن "${cat}" بصعوبة ${val}/600. الرد يكون JSON فقط بتنسيق: {"q":"السؤال","a":"الإجابة"};
-            const res = await fetch(https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${G_API}, {
-                method: 'POST', body: JSON.stringify({ contents: [{ parts: [{ text: p }] }] })
+    function beginGame() {
+        document.getElementById('setup-screen').style.display = 'none';
+        document.getElementById('main-game').style.display = 'block';
+        const board = document.getElementById('game-board');
+        selected.forEach(cat => {
+            let title = document.createElement('div');
+            title.style.gridColumn = "span 3";
+            title.style.background = "#000";
+            title.innerText = cat;
+            board.appendChild(title);
+            [200, 400, 600].forEach(val => {
+                let cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.innerText = val;
+                board.appendChild(cell);
             });
-            const d = await res.json();
-            const resText = d.candidates[0].content.parts[0].text;
-            const cleanJson = JSON.parse(resText.substring(resText.indexOf('{'), resText.lastIndexOf('}') + 1));
-            document.getElementById('q-content').innerText = cleanJson.q;
-            document.getElementById('a-content').innerText = cleanJson.a;
-            startTimer();
-        } catch (e) { document.getElementById('q-content').innerText = "خطأ في الاتصال، جرب مربعاً آخر."; }
+        });
     }
 
-    function startTimer() {
-        let s = 20; document.getElementById('time-display').innerText = s;
-        clock = setInterval(() => { s--; document.getElementById('time-display').innerText = s; if(s <= 0) { clearInterval(clock); showAnswer(); } }, 1000);
-    }
-
-    function showAnswer() { clearInterval(clock); document.getElementById('a-content').style.display = 'block'; document.getElementById('q-actions').style.display = 'none'; document.getElementById('score-actions').style.display = 'block'; }
-
-    function givePoints(t) { scores[t] += activeVal; document.getElementById(score${t}).innerText = scores[t]; turn = (turn === 1) ? 2 : 1; document.getElementById('turn-txt').innerText = دور: فريق ${turn}; exitQ(); }function exitQ() { document.getElementById('q-modal').style.display = 'none'; document.getElementById('a-content').style.display = 'none'; document.getElementById('q-actions').style.display = 'block'; document.getElementById('score-actions').style.display = 'none'; }
+    // تشغيل الدالة فوراً
+    window.onload = showCats;
 </script>
 </body>
 </html>
