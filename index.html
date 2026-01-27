@@ -3,58 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تحدي سين جيم - النسخة الذكية</title>
+    <title>تحدي سين جيم - النسخة الاحترافية</title>
     <style>
         :root { --gold: #fcc201; --blue: #060ce9; --dark-blue: #02056e; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--dark-blue); color: white; font-family: sans-serif; margin: 0; text-align: center; }
+        body { background: var(--dark-blue); color: white; font-family: sans-serif; margin: 0; text-align: center; overflow-x: hidden; }
         .setup-container { padding: 20px; }
         .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .cat-item { background: black; border: 2px solid var(--gold); padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        .cat-item.active { background: var(--gold); color: black; }
-        .btn-start { background: var(--gold); color: black; border: none; padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border-radius: 50px; margin-top: 20px; display: none; width: 80%; cursor: pointer; }
-        .game-header { background: black; padding: 10px; border-bottom: 3px solid var(--gold); display: flex; justify-content: space-around; position: sticky; top: 0; z-index: 100; }
+        .cat-item { background: black; border: 2px solid var(--gold); padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .cat-item.active { background: var(--gold); color: black; transform: scale(1.05); }
+        .btn-start { background: var(--gold); color: black; border: none; padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border-radius: 50px; margin-top: 20px; display: none; width: 80%; cursor: pointer; box-shadow: 0 4px #b88e00; }
+        .game-header { background: black; padding: 10px; border-bottom: 3px solid var(--gold); display: flex; justify-content: space-around; position: sticky; top: 0; z-index: 100; font-weight: bold; }
         .game-board { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 10px; padding-bottom: 50px; }
-        .cat-section { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px; }
-        .cat-name { background: black; padding: 5px; color: var(--gold); font-weight: bold; margin-bottom: 10px; border-radius: 5px; }
+        .cat-section { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px; border: 1px solid rgba(252, 194, 1, 0.3); }
+        .cat-name { background: black; padding: 8px; color: var(--gold); font-weight: bold; margin-bottom: 10px; border-radius: 5px; border: 1px solid var(--gold); }
         .vals-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .val-cell { background: var(--blue); border: 2px solid black; height: 70px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; color: var(--gold); border-radius: 8px; cursor: pointer; }
-        .val-cell.used { opacity: 0.2; color: transparent; pointer-events: none; }
+        .val-cell { background: var(--blue); border: 2px solid black; height: 75px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: bold; color: var(--gold); border-radius: 8px; cursor: pointer; box-shadow: 0 4px #000; }
+        .val-cell:active { transform: translateY(2px); box-shadow: 0 2px #000; }
+        .val-cell.used { opacity: 0.15; color: transparent; pointer-events: none; box-shadow: none; }
         .modal { position: fixed; inset: 0; background: var(--dark-blue); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 200; }
-        .q-text { font-size: 1.8rem; margin: 20px 0; line-height: 1.4; }
-        .a-text { color: var(--gold); font-size: 1.5rem; margin-bottom: 20px; border: 2px dashed var(--gold); padding: 10px; width: 100%; }
-        .score-btn { padding: 12px 20px; font-size: 1rem; border-radius: 10px; border: none; font-weight: bold; margin: 5px; cursor: pointer; color: white; }
+        .timer { font-size: 4rem; color: #ff4d4d; font-weight: bold; margin-bottom: 15px; text-shadow: 2px 2px #000; }
+        .q-text { font-size: 1.8rem; margin: 20px 0; line-height: 1.4; font-weight: bold; }
+        .a-text { color: var(--gold); font-size: 1.6rem; margin-bottom: 25px; border: 2px dashed var(--gold); padding: 15px; border-radius: 10px; width: 90%; background: rgba(0,0,0,0.2); }
+        .score-btn { padding: 15px 25px; font-size: 1.1rem; border-radius: 10px; border: none; font-weight: bold; margin: 5px; cursor: pointer; color: white; min-width: 100px; }
     </style>
 </head>
 <body>
 
 <div id="setupScreen" class="setup-container">
-    <h1 style="color:var(--gold)">تحدي سين جيم</h1>
-    <p>اختر 6 فئات لتبدأ Gemini بتوليد الأسئلة:</p>
+    <h1 style="color:var(--gold); text-shadow: 2px 2px #000;">تحدي سين جيم AI</h1>
+    <p>اختر 6 فئات لبدء توليد الأسئلة الذكية:</p>
     <div id="catGrid" class="cat-grid"></div>
-    <button id="startBtn" class="btn-start" onclick="startGame()">ابدأ التحدي</button>
+    <button id="startBtn" class="btn-start" onclick="startGame()">ابدأ اللعبة الآن</button>
 </div>
 
 <div id="gameScreen" style="display:none">
     <div class="game-header">
-        <div>فريق 1: <b id="s1" style="color:var(--gold)">0</b></div>
-        <div id="turnInfo" style="color:white">دور: فريق 1</div>
-        <div>فريق 2: <b id="s2" style="color:var(--gold)">0</b></div>
+        <div>فريق 1: <span id="s1" style="color:var(--gold)">0</span></div>
+        <div id="turnInfo">دور: <span style="color:var(--gold)">فريق 1</span></div>
+        <div>فريق 2: <span id="s2" style="color:var(--gold)">0</span></div>
     </div>
     <div id="board" class="game-board"></div>
 </div>
 
 <div id="qModal" class="modal">
-    <div id="timer" style="font-size:3rem; color:red; font-weight:bold;">20</div>
-    <div id="qText" class="q-text">جاري طلب سؤال جديد من Gemini...</div>
+    <div id="timer" class="timer">20</div>
+    <div id="qText" class="q-text">جاري استدعاء الذكاء الاصطناعي...</div>
     <div id="aText" class="a-text" style="display:none"></div>
     <div id="modalBtns">
-        <button class="btn-start" style="display:inline-block" onclick="revealAnswer()">كشف الإجابة</button>
+        <button class="btn-start" style="display:inline-block; width: auto;" onclick="revealAnswer()">كشف الإجابة</button>
     </div>
     <div id="scoreBtns" style="display:none">
         <button class="score-btn" style="background:#28a745" onclick="addPoints(1)">فريق 1 ✅</button>
         <button class="score-btn" style="background:#28a745" onclick="addPoints(2)">فريق 2 ✅</button>
-        <button class="score-btn" style="background:#6c757d;" onclick="closeModal()">خطأ ❌</button>
+        <button class="score-btn" style="background:#dc3545" onclick="closeModal()">خطأ ❌</button>
     </div>
 </div>
 
@@ -62,6 +64,7 @@
     const G_API = 'AIzaSyB_D649NZ6bMTB98CEpV1gcSzZiaz4uuZk';
     const cats = ["باب الحارة", "رياضة", "تاريخ", "عواصم", "أمثال شعبية", "أنمي", "فضاء", "علوم", "سيارات", "أكلات", "جغرافيا", "تقنية"];
     let selected = []; let scores = [0, 0]; let turn = 1; let currentVal = 0; let clock;
+    let usedQuestions = new Set();
 
     const grid = document.getElementById('catGrid');
     cats.forEach(c => {
@@ -100,44 +103,49 @@
     async function ask(cat, val, el) {
         el.classList.add('used');
         currentVal = val;
-        document.getElementById('qModal').style.display = 'flex';
-        document.getElementById('qText').innerText = "جاري طلب سؤال فريد من Gemini...";
-        document.getElementById('aText').style.display = 'none';
+        const modal = document.getElementById('qModal');
+        const qText = document.getElementById('qText');
+        const aText = document.getElementById('aText');
+        
+        modal.style.display = 'flex';
+        qText.innerText = "جاري توليد سؤال فريد...";
+        aText.style.display = 'none';
         document.getElementById('modalBtns').style.display = 'inline-block';
         document.getElementById('scoreBtns').style.display = 'none';
         document.getElementById('timer').innerText = "20";
 
         try {
-            // استخدام v1 بدلاً من v1beta ونموذج gemini-1.5-flash
+            const prompt = `أعطني سؤالاً واحداً عن "${cat}" بصعوبة ${val}. الرد JSON فقط بدون مقدمات: {"q":"السؤال","a":"الإجابة"}`;
             const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${G_API}`;
-            const prompt = `أعطني سؤالاً واحداً فريداً عن "${cat}" بصعوبة ${val}/600. يمنع تكرار الأسئلة. الرد يكون JSON حصراً: {"q":"السؤال","a":"الإجابة"}`;
             
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
-            
+
             const data = await response.json();
+            const text = data.candidates[0].content.parts[0].text;
             
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                const rawText = data.candidates[0].content.parts[0].text;
-                const cleanJson = JSON.parse(rawText.substring(rawText.indexOf('{'), rawText.lastIndexOf('}') + 1));
-                document.getElementById('qText').innerText = cleanJson.q;
-                document.getElementById('aText').innerText = "الإجابة: " + cleanJson.a;
-                startTimer();
-            } else {
-                throw new Error("لم يتم العثور على رد من النموذج");
-            }
-        } catch(e) {
-            document.getElementById('qText').innerText = "فشل الاتصال: " + e.message;
+            // تنظيف النص لضمان استخراج JSON فقط
+            const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+            const res = JSON.parse(jsonStr);
+
+            qText.innerText = res.q;
+            aText.innerText = "الإجابة: " + res.a;
+            startTimer();
+        } catch (e) {
+            qText.innerText = "فشل في جلب سؤال. حاول فتح المربع مرة أخرى أو تأكد من اتصال الإنترنت.";
+            console.error(e);
         }
     }
 
     function startTimer() {
         let s = 20;
+        clearInterval(clock);
         clock = setInterval(() => {
-            s--; document.getElementById('timer').innerText = s;
+            s--;
+            document.getElementById('timer').innerText = s;
             if(s <= 0) { clearInterval(clock); revealAnswer(); }
         }, 1000);
     }
@@ -146,14 +154,15 @@
         clearInterval(clock);
         document.getElementById('aText').style.display = 'block';
         document.getElementById('modalBtns').style.display = 'none';
-        document.getElementById('scoreBtns').style.display = 'block';
+        document.getElementById('scoreBtns').style.display = 'flex';
+        document.getElementById('scoreBtns').style.justifyContent = 'center';
     }
 
     function addPoints(f) {
         scores[f-1] += currentVal;
         document.getElementById('s'+f).innerText = scores[f-1];
         turn = turn === 1 ? 2 : 1;
-        document.getElementById('turnInfo').innerText = "دور: فريق " + turn;
+        document.getElementById('turnInfo').innerHTML = `دور: <span style="color:var(--gold)">فريق ${turn}</span>`;
         closeModal();
     }
 
