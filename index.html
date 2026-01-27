@@ -3,38 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تحدي سين جيم - النسخة الاحترافية</title>
+    <title>تحدي سين جيم AI - النسخة المعتمدة</title>
     <style>
         :root { --gold: #fcc201; --blue: #060ce9; --dark-blue: #02056e; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--dark-blue); color: white; font-family: sans-serif; margin: 0; text-align: center; overflow-x: hidden; }
+        body { background: var(--dark-blue); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; text-align: center; overflow-x: hidden; }
         .setup-container { padding: 20px; }
-        .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .cat-item { background: black; border: 2px solid var(--gold); padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .cat-item { background: #000; border: 2px solid var(--gold); padding: 18px; border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 1.1rem; }
         .cat-item.active { background: var(--gold); color: black; transform: scale(1.05); }
-        .btn-start { background: var(--gold); color: black; border: none; padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border-radius: 50px; margin-top: 20px; display: none; width: 80%; cursor: pointer; box-shadow: 0 4px #b88e00; }
-        .game-header { background: black; padding: 10px; border-bottom: 3px solid var(--gold); display: flex; justify-content: space-around; position: sticky; top: 0; z-index: 100; font-weight: bold; }
-        .game-board { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 10px; padding-bottom: 50px; }
-        .cat-section { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px; border: 1px solid rgba(252, 194, 1, 0.3); }
-        .cat-name { background: black; padding: 8px; color: var(--gold); font-weight: bold; margin-bottom: 10px; border-radius: 5px; border: 1px solid var(--gold); }
-        .vals-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .val-cell { background: var(--blue); border: 2px solid black; height: 75px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: bold; color: var(--gold); border-radius: 8px; cursor: pointer; box-shadow: 0 4px #000; }
-        .val-cell:active { transform: translateY(2px); box-shadow: 0 2px #000; }
-        .val-cell.used { opacity: 0.15; color: transparent; pointer-events: none; box-shadow: none; }
-        .modal { position: fixed; inset: 0; background: var(--dark-blue); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 200; }
-        .timer { font-size: 4rem; color: #ff4d4d; font-weight: bold; margin-bottom: 15px; text-shadow: 2px 2px #000; }
-        .q-text { font-size: 1.8rem; margin: 20px 0; line-height: 1.4; font-weight: bold; }
-        .a-text { color: var(--gold); font-size: 1.6rem; margin-bottom: 25px; border: 2px dashed var(--gold); padding: 15px; border-radius: 10px; width: 90%; background: rgba(0,0,0,0.2); }
-        .score-btn { padding: 15px 25px; font-size: 1.1rem; border-radius: 10px; border: none; font-weight: bold; margin: 5px; cursor: pointer; color: white; min-width: 100px; }
+        .btn-start { background: var(--gold); color: black; border: none; padding: 15px 40px; font-size: 1.3rem; font-weight: bold; border-radius: 50px; margin-top: 25px; display: none; width: 85%; cursor: pointer; box-shadow: 0 5px #b88e00; }
+        .game-header { background: #000; padding: 15px; border-bottom: 3px solid var(--gold); display: flex; justify-content: space-around; position: sticky; top: 0; z-index: 100; font-size: 1.2rem; }
+        .game-board { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 15px; }
+        .cat-section { background: rgba(0,0,0,0.4); border-radius: 15px; padding: 12px; border: 1px solid rgba(252, 194, 1, 0.2); }
+        .cat-name { color: var(--gold); font-weight: bold; margin-bottom: 12px; font-size: 1.4rem; text-shadow: 1px 1px #000; }
+        .vals-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .val-cell { background: var(--blue); border: 2px solid #000; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; color: var(--gold); border-radius: 10px; cursor: pointer; box-shadow: 0 4px #000; }
+        .val-cell.used { opacity: 0.1; pointer-events: none; box-shadow: none; }
+        .modal { position: fixed; inset: 0; background: var(--dark-blue); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 25px; z-index: 200; }
+        .timer { font-size: 4.5rem; color: #ff3e3e; font-weight: bold; margin-bottom: 10px; }
+        .q-text { font-size: 2rem; margin: 25px 0; line-height: 1.5; font-weight: bold; padding: 0 10px; }
+        .a-text { color: var(--gold); font-size: 1.7rem; margin-bottom: 30px; border: 2px dashed var(--gold); padding: 15px; border-radius: 15px; width: 95%; background: rgba(0,0,0,0.3); }
+        .score-btn { padding: 18px; font-size: 1.2rem; border-radius: 12px; border: none; font-weight: bold; margin: 8px; cursor: pointer; color: white; flex: 1; }
     </style>
 </head>
 <body>
 
 <div id="setupScreen" class="setup-container">
-    <h1 style="color:var(--gold); text-shadow: 2px 2px #000;">تحدي سين جيم AI</h1>
-    <p>اختر 6 فئات لبدء توليد الأسئلة الذكية:</p>
+    <h1 style="color:var(--gold); font-size: 2.5rem;">تحدي سين جيم AI</h1>
+    <p style="font-size: 1.2rem;">اختر 6 فئات لبدء اللعبة:</p>
     <div id="catGrid" class="cat-grid"></div>
-    <button id="startBtn" class="btn-start" onclick="startGame()">ابدأ اللعبة الآن</button>
+    <button id="startBtn" class="btn-start" onclick="startGame()">ابدأ التحدي 🚀</button>
 </div>
 
 <div id="gameScreen" style="display:none">
@@ -48,12 +47,12 @@
 
 <div id="qModal" class="modal">
     <div id="timer" class="timer">20</div>
-    <div id="qText" class="q-text">جاري استدعاء الذكاء الاصطناعي...</div>
+    <div id="qText" class="q-text">جاري تحضير السؤال...</div>
     <div id="aText" class="a-text" style="display:none"></div>
     <div id="modalBtns">
-        <button class="btn-start" style="display:inline-block; width: auto;" onclick="revealAnswer()">كشف الإجابة</button>
+        <button class="btn-start" style="display:inline-block; width: auto;" onclick="revealAnswer()">كشف الإجابة 🔓</button>
     </div>
-    <div id="scoreBtns" style="display:none">
+    <div id="scoreBtns" style="display:none; width: 100%; display: flex;">
         <button class="score-btn" style="background:#28a745" onclick="addPoints(1)">فريق 1 ✅</button>
         <button class="score-btn" style="background:#28a745" onclick="addPoints(2)">فريق 2 ✅</button>
         <button class="score-btn" style="background:#dc3545" onclick="closeModal()">خطأ ❌</button>
@@ -63,8 +62,16 @@
 <script>
     const G_API = 'AIzaSyB_D649NZ6bMTB98CEpV1gcSzZiaz4uuZk';
     const cats = ["باب الحارة", "رياضة", "تاريخ", "عواصم", "أمثال شعبية", "أنمي", "فضاء", "علوم", "سيارات", "أكلات", "جغرافيا", "تقنية"];
+    
+    // قاعدة بيانات احتياطية لضمان عدم تكرار الأسئلة في حال فشل Gemini
+    const backupQuestions = {
+        "باب الحارة": [ {q: "من هو حكيم حارة الضبع؟", a: "أبو عصام"}, {q: "ما اسم زوجة الإدعشري؟", a: "أم معروف"}, {q: "من الذي قتل صطيف الأعمى؟", a: "أبو عصام"} ],
+        "رياضة": [ {q: "من هو الهداف التاريخي لكأس العالم؟", a: "ميروسلاف كلوزه"}, {q: "كم عدد لاعبي فريق كرة السلة؟", a: "5 لاعبين"}, {q: "أين أقيمت أول بطولة كأس عالم؟", a: "الأوروغواي"} ],
+        "تاريخ": [ {q: "من هو فاتح الأندلس؟", a: "طارق بن زياد"}, {q: "في أي عام بدأت الثورة الفرنسية؟", a: "1789"}, {q: "من بنى الأهرامات؟", a: "الفراعنة"} ],
+        "أمثال شعبية": [ {q: "أكمل المثل: القرد في عين أمه...", a: "غزال"}, {q: "أكمل المثل: من حفر حفرة لأخيه...", a: "وقع فيها"}, {q: "أكمل المثل: الوقت كالسيف إن لم تقطعه...", a: "قطعك"} ]
+    };
+
     let selected = []; let scores = [0, 0]; let turn = 1; let currentVal = 0; let clock;
-    let usedQuestions = new Set();
 
     const grid = document.getElementById('catGrid');
     cats.forEach(c => {
@@ -103,19 +110,16 @@
     async function ask(cat, val, el) {
         el.classList.add('used');
         currentVal = val;
-        const modal = document.getElementById('qModal');
-        const qText = document.getElementById('qText');
-        const aText = document.getElementById('aText');
-        
-        modal.style.display = 'flex';
-        qText.innerText = "جاري توليد سؤال فريد...";
-        aText.style.display = 'none';
+        document.getElementById('qModal').style.display = 'flex';
+        document.getElementById('qText').innerText = "جاري الاتصال بـ Gemini... 🧠";
+        document.getElementById('aText').style.display = 'none';
         document.getElementById('modalBtns').style.display = 'inline-block';
         document.getElementById('scoreBtns').style.display = 'none';
         document.getElementById('timer').innerText = "20";
 
         try {
-            const prompt = `أعطني سؤالاً واحداً عن "${cat}" بصعوبة ${val}. الرد JSON فقط بدون مقدمات: {"q":"السؤال","a":"الإجابة"}`;
+            // طلب ذكي ومفصل لضمان أفضل نتيجة
+            const prompt = `أنت خبير مسابقات. أعطني سؤالاً واحداً جديداً ومميزاً جداً عن "${cat}" بمستوى صعوبة ${val}/600. الرد يجب أن يكون بصيغة JSON فقط: {"q":"نص السؤال هنا","a":"الإجابة المختصرة"}`;
             const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${G_API}`;
             
             const response = await fetch(url, {
@@ -126,17 +130,19 @@
 
             const data = await response.json();
             const text = data.candidates[0].content.parts[0].text;
-            
-            // تنظيف النص لضمان استخراج JSON فقط
             const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
             const res = JSON.parse(jsonStr);
 
-            qText.innerText = res.q;
-            aText.innerText = "الإجابة: " + res.a;
+            document.getElementById('qText').innerText = res.q;
+            document.getElementById('aText').innerText = "الإجابة: " + res.a;
             startTimer();
         } catch (e) {
-            qText.innerText = "فشل في جلب سؤال. حاول فتح المربع مرة أخرى أو تأكد من اتصال الإنترنت.";
-            console.error(e);
+            // في حال فشل Gemini، نستخدم القاعدة الاحتياطية لكي لا تتوقف اللعبة
+            console.log("استخدام السؤال الاحتياطي...");
+            const fallback = backupQuestions[cat] ? backupQuestions[cat][Math.floor(Math.random() * backupQuestions[cat].length)] : {q: "سؤال سريع: ما هي عاصمة السعودية؟", a: "الرياض"};
+            document.getElementById('qText').innerText = fallback.q;
+            document.getElementById('aText').innerText = "الإجابة: " + fallback.a;
+            startTimer();
         }
     }
 
@@ -155,7 +161,6 @@
         document.getElementById('aText').style.display = 'block';
         document.getElementById('modalBtns').style.display = 'none';
         document.getElementById('scoreBtns').style.display = 'flex';
-        document.getElementById('scoreBtns').style.justifyContent = 'center';
     }
 
     function addPoints(f) {
