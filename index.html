@@ -3,83 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تحدي سين جيم AI - النسخة المستقرة</title>
+    <title>تحدي سين جيم - نسخة الأسئلة المكثفة</title>
     <style>
         :root { --gold: #fcc201; --blue: #060ce9; --dark-blue: #02056e; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--dark-blue); color: white; font-family: sans-serif; margin: 0; text-align: center; overflow: hidden; }
-        .setup-container { padding: 20px; height: 100vh; overflow-y: auto; }
-        .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .cat-item { background: black; border: 2px solid var(--gold); padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        .cat-item.active { background: var(--gold); color: black; }
-        .btn-start { background: var(--gold); color: black; border: none; padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border-radius: 50px; margin-top: 20px; display: none; width: 80%; cursor: pointer; }
-        .game-header { background: black; padding: 10px; border-bottom: 3px solid var(--gold); display: flex; justify-content: space-around; font-weight: bold; }
-        .game-board { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 10px; height: calc(100vh - 50px); overflow-y: auto; }
-        .cat-section { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px; border: 1px solid var(--gold); }
-        .cat-name { color: var(--gold); font-weight: bold; margin-bottom: 10px; font-size: 1.2rem; }
+        body { background: var(--dark-blue); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; text-align: center; overflow: hidden; }
+        .setup-container { padding: 20px; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; width: 100%; max-width: 500px; }
+        .cat-item { background: rgba(0,0,0,0.5); border: 2px solid var(--gold); padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; }
+        .cat-item.active { background: var(--gold); color: black; transform: scale(1.02); }
+        .btn-start { background: var(--gold); color: black; border: none; padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border-radius: 50px; margin-top: 20px; display: none; cursor: pointer; }
+        .game-header { background: #000; padding: 15px; border-bottom: 3px solid var(--gold); display: flex; justify-content: space-around; font-weight: bold; }
+        .game-board { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 15px; height: calc(100vh - 60px); overflow-y: auto; }
+        .cat-section { background: rgba(255,255,255,0.05); border-radius: 15px; padding: 10px; border: 1px solid var(--gold); }
+        .cat-name { color: var(--gold); font-weight: bold; margin-bottom: 8px; font-size: 1.2rem; }
         .vals-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .val-cell { background: var(--blue); border: 2px solid black; height: 65px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: bold; color: var(--gold); border-radius: 8px; cursor: pointer; }
+        .val-cell { background: var(--blue); border: 2px solid #000; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: bold; color: var(--gold); border-radius: 8px; cursor: pointer; }
         .val-cell.used { opacity: 0.1; pointer-events: none; }
-        .modal { position: fixed; inset: 0; background: var(--dark-blue); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 200; }
-        .timer { font-size: 3.5rem; color: #ff4d4d; font-weight: bold; }
+        .modal { position: fixed; inset: 0; background: var(--dark-blue); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 1000; }
+        .timer { font-size: 4rem; color: #ff4d4d; font-weight: bold; }
         .q-text { font-size: 1.6rem; margin: 20px 0; font-weight: bold; }
-        .a-text { color: var(--gold); font-size: 1.4rem; margin-bottom: 20px; padding: 10px; border: 2px dashed var(--gold); width: 90%; }
-        .score-btn { padding: 12px; font-size: 1rem; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; margin: 5px; flex: 1; }
+        .a-text { color: var(--gold); font-size: 1.4rem; margin-bottom: 20px; padding: 10px; border: 2px dashed var(--gold); border-radius: 10px; width: 100%; }
+        .score-btns { display: flex; width: 100%; gap: 10px; }
+        .s-btn { flex: 1; padding: 15px; border-radius: 10px; border: none; font-weight: bold; color: white; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div id="setupScreen" class="setup-container">
-    <h1 style="color:var(--gold)">تحدي سين جيم AI</h1>
-    <p>اختر 6 فئات (سيتم توليد أسئلة فريدة لكل فئة):</p>
+    <h2 style="color:var(--gold)">تحدي سين جيم AI</h2>
+    <p>اختر 6 فئات للبدء:</p>
     <div id="catGrid" class="cat-grid"></div>
-    <button id="startBtn" class="btn-start" onclick="startGame()">بدأ اللعبة 🚀</button>
+    <button id="startBtn" class="btn-start" onclick="startGame()">ابدأ اللعب 🎮</button>
 </div>
 
 <div id="gameScreen" style="display:none">
     <div class="game-header">
-        <div>فريق 1: <span id="s1" style="color:var(--gold)">0</span></div>
-        <div id="turnT">دور: فريق 1</div>
-        <div>فريق 2: <span id="s2" style="color:var(--gold)">0</span></div>
+        <div style="color:#28a745">فريق 1: <span id="s1">0</span></div>
+        <div id="turnT" style="color:var(--gold)">دور: فريق 1</div>
+        <div style="color:#28a745">فريق 2: <span id="s2">0</span></div>
     </div>
     <div id="board" class="game-board"></div>
 </div>
 
 <div id="qModal" class="modal">
     <div id="timer" class="timer">20</div>
-    <div id="qText" class="q-text">جاري الطلب من Gemini...</div>
+    <div id="qText" class="q-text"></div>
     <div id="aText" class="a-text" style="display:none"></div>
-    <div id="modalBtns">
-        <button class="btn-start" style="display:inline-block; width: auto;" onclick="revealAnswer()">كشف الإجابة 🔓</button>
-    </div>
-    <div id="scoreBtns" style="display:none; width: 100%; display: flex; justify-content: center;">
-        <button class="score-btn" style="background:green" onclick="addPoints(1)">فريق 1 ✅</button>
-        <button class="score-btn" style="background:green" onclick="addPoints(2)">فريق 2 ✅</button>
-        <button class="score-btn" style="background:grey" onclick="closeModal()">خطأ ❌</button>
+    <button id="revealBtn" class="btn-start" style="display:block" onclick="revealAnswer()">كشف الإجابة 🔓</button>
+    <div id="scoreBtns" class="score-btns" style="display:none">
+        <button class="s-btn" style="background:#28a745" onclick="addPoints(1)">فريق 1 ✅</button>
+        <button class="s-btn" style="background:#28a745" onclick="addPoints(2)">فريق 2 ✅</button>
+        <button class="s-btn" style="background:#dc3545" onclick="closeModal()">خطأ ❌</button>
     </div>
 </div>
 
 <script>
-    // استخدم مفتاحك الحالي، الرابط المحدث سيتكفل بالباقي
-    const G_API = 'AIzaSyB_D649NZ6bMTB98CEpV1gcSzZiaz4uuZk';
-    const cats = ["باب الحارة", "رياضة", "تاريخ", "عواصم", "أمثال شعبية", "أنمي", "فضاء", "علوم", "سيارات", "أكلات"];
-    let selected = []; let scores = [0, 0]; let turn = 1; let currentVal = 0; let clock;
-    let usedQuestions = []; // ذاكرة الجلسة لمنع التكرار
+    // قاعدة بيانات الأسئلة - 2 لكل مستوى لكل فئة
+    const questionsDB = {
+        "باب الحارة": {
+            200: [{q: "من هو حكيم حارة الضبع؟", a: "أبو عصام"}, {q: "ما اسم القهوة في الحارة؟", a: "قهوة أبو حاتم"}],
+            400: [{q: "ما اسم الشخصية التي قتلت صطيف الأعمى؟", a: "أبو عصام"}, {q: "من هو العقيد الذي استلم بعد أبو شهاب؟", a: "معتز"}],
+            600: [{q: "ما اسم زوجة أبو عصام التي تزوجها بالسر؟", a: "نادية"}, {q: "ما اسم الجاسوس الذي كان يدعي العمى؟", a: "صطيف"}]
+        },
+        "رياضة": {
+            200: [{q: "كم عدد لاعبي فريق كرة القدم؟", a: "11 لاعب"}, {q: "من هو الهداف التاريخي لكأس العالم؟", a: "ميروسلاف كلوزه"}],
+            400: [{q: "من فاز بكأس العالم 2010؟", a: "إسبانيا"}, {q: "ما هو النادي الملقب بالسيدة العجوز؟", a: "يوفنتوس"}],
+            600: [{q: "من هو اللاعب الوحيد الذي فاز بـ 3 كؤوس عالم؟", a: "بيليه"}, {q: "في أي عام تأسس نادي ريال مدريد؟", a: "1902"}]
+        },
+        "تاريخ": {
+            200: [{q: "من بنى الأهرامات؟", a: "الفراعنة"}, {q: "ما هي عاصمة الدولة الأموية؟", a: "دمشق"}],
+            400: [{q: "من هو القائد الذي فتح الأندلس؟", a: "طارق بن زياد"}, {q: "في أي عام انتهت الحرب العالمية الثانية؟", a: "1945"}],
+            600: [{q: "من هو مؤسس الدولة العباسية؟", a: "أبو العباس السفاح"}, {q: "ما هو الاسم القديم لمدينة إسطنبول؟", a: "القسطنطينية"}]
+        },
+        "فضاء": {
+            200: [{q: "ما هو الكوكب الأحمر؟", a: "المريخ"}, {q: "ما هو أقرب نجم للأرض؟", a: "الشمس"}],
+            400: [{q: "ما هو أكبر كوكب في المجموعة الشمسية؟", a: "المشتري"}, {q: "من هو أول إنسان صعد للقمر؟", a: "نيل أرمسترونغ"}],
+            600: [{q: "ما هو الكوكب الذي يمتلك أجمل حلقات حوله؟", a: "زحل"}, {q: "كم تستغرق الأرض للدوران حول الشمس؟", a: "365 يوم وربع"}]
+        },
+        "أمثال شعبية": {
+            200: [{q: "أكمل المثل: الوقت كالسيف إن لم تقطعه...", a: "قطعك"}, {q: "أكمل المثل: في العجلة الندامة وفي التأني...", a: "السلامة"}],
+            400: [{q: "ما هو المثل الذي يضرب للشخص الذي يعود لفعله القديم؟", a: "عادت ريما لعادتها القديمة"}, {q: "أكمل: من حفر حفرة لأخيه...", a: "وقع فيها"}],
+            600: [{q: "ما هو المثل الذي يقال عند تشابه الابن مع أبيه؟", a: "هذا الشبل من ذاك الأسد"}, {q: "أكمل المثل: وافق شنٌّ...", a: "طبقة"}]
+        },
+        "سيارات": {
+            200: [{q: "ما هي جنسية شركة تويوتا؟", a: "يابانية"}, {q: "ما هو شعار شركة مرسيدس؟", a: "النجمة الثلاثية"}],
+            400: [{q: "ما هي الشركة التي تنتج سيارة 'موستانج'؟", a: "فورد"}, {q: "ما هي أسرع سيارة في العالم حالياً؟", a: "بوغاتي شيرون / كونيجسيج"}],
+            600: [{q: "ماذا تعني اختصار شركة BMW؟", a: "Bavarian Motor Works"}, {q: "في أي بلد تصنع سيارات فيراري؟", a: "إيطاليا"}]
+        },
+        "أنمي": {
+            200: [{q: "ما اسم بطل أنمي ون بيس؟", a: "لوفي"}, {q: "من هو نينجا قرية الورق؟", a: "ناروتو"}],
+            400: [{q: "ما هو اسم والد 'غون' في قناص؟", a: "جين فريكس"}, {q: "ما هو لقب 'ليفاي' في هجوم العمالقة؟", a: "أقوى جندي في البشرية"}],
+            600: [{q: "كم عدد كرات التنين في دراغون بول؟", a: "7 كرات"}, {q: "ما هو اسم سيف 'زورو' الأسود؟", a: "شوسوي"}]
+        }
+    };
 
-    // إعداد الشاشة الرئيسية
+    let selectedCats = []; let scores = [0, 0]; let turn = 1; let currentVal = 0; let clock;
+    
+    // إنشاء واجهة الاختيار
     const grid = document.getElementById('catGrid');
-    cats.forEach(c => {
+    Object.keys(questionsDB).forEach(cat => {
         const div = document.createElement('div');
-        div.className = 'cat-item'; div.innerText = c;
+        div.className = 'cat-item'; div.innerText = cat;
         div.onclick = () => {
             if(div.classList.contains('active')) {
                 div.classList.remove('active');
-                selected = selected.filter(x => x !== c);
-            } else if(selected.length < 6) {
+                selectedCats = selectedCats.filter(c => c !== cat);
+            } else if(selectedCats.length < 6) {
                 div.classList.add('active');
-                selected.push(c);
+                selectedCats.push(cat);
             }
-            document.getElementById('startBtn').style.display = selected.length === 6 ? 'inline-block' : 'none';
+            document.getElementById('startBtn').style.display = selectedCats.length === 6 ? 'block' : 'none';
         };
         grid.appendChild(div);
     });
@@ -88,52 +122,33 @@
         document.getElementById('setupScreen').style.display = 'none';
         document.getElementById('gameScreen').style.display = 'block';
         const board = document.getElementById('board');
-        selected.forEach(cat => {
+        selectedCats.forEach(cat => {
             const sec = document.createElement('div');
             sec.className = 'cat-section';
             sec.innerHTML = `<div class="cat-name">${cat}</div><div class="vals-row">
-                <div class="val-cell" onclick="ask('${cat}', 200, this)">200</div>
-                <div class="val-cell" onclick="ask('${cat}', 400, this)">400</div>
-                <div class="val-cell" onclick="ask('${cat}', 600, this)">600</div>
+                <div class="val-cell" onclick="showQ('${cat}', 200, this)">200</div>
+                <div class="val-cell" onclick="showQ('${cat}', 400, this)">400</div>
+                <div class="val-cell" onclick="showQ('${cat}', 600, this)">600</div>
             </div>`;
             board.appendChild(sec);
         });
     }
 
-    async function ask(cat, val, el) {
+    function showQ(cat, val, el) {
         el.classList.add('used');
         currentVal = val;
+        const options = questionsDB[cat][val];
+        // اختيار أحد السؤالين بشكل عشوائي
+        const pick = options[Math.floor(Math.random() * options.length)];
+        
         document.getElementById('qModal').style.display = 'flex';
-        document.getElementById('qText').innerText = "جاري الاتصال بـ Gemini... 🧠";
+        document.getElementById('qText').innerText = pick.q;
+        document.getElementById('aText').innerText = "الإجابة: " + pick.a;
         document.getElementById('aText').style.display = 'none';
-        document.getElementById('modalBtns').style.display = 'inline-block';
+        document.getElementById('revealBtn').style.display = 'block';
         document.getElementById('scoreBtns').style.display = 'none';
-
-        try {
-            // تحديث الرابط إلى النسخة المستقرة v1 لتجنب خطأ v1beta
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${G_API}`;
-            
-            // برومبت صارم يجبر الموديل على عدم التكرار
-            const prompt = `أجب بصيغة JSON فقط: {"q": "سؤال عن ${cat} بصعوبة ${val}/600", "a": "الإجابة"}. 
-            يجب أن يكون السؤال مختلفاً عن: ${usedQuestions.join(' | ')}`;
-
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-            });
-
-            const data = await response.json();
-            const rawText = data.candidates[0].content.parts[0].text;
-            const res = JSON.parse(rawText.substring(rawText.indexOf('{'), rawText.lastIndexOf('}') + 1));
-
-            document.getElementById('qText').innerText = res.q;
-            document.getElementById('aText').innerText = "الإجابة: " + res.a;
-            usedQuestions.push(res.q); // تسجيل السؤال لمنع تكراره
-            startTimer();
-        } catch (e) {
-            document.getElementById('qText').innerText = "فشل الاتصال بالذكاء الاصطناعي. تأكد من مفتاح الـ API أو اتصال الإنترنت.";
-        }
+        
+        startTimer();
     }
 
     function startTimer() {
@@ -148,13 +163,14 @@
     function revealAnswer() {
         clearInterval(clock);
         document.getElementById('aText').style.display = 'block';
-        document.getElementById('modalBtns').style.display = 'none';
+        document.getElementById('revealBtn').style.display = 'none';
         document.getElementById('scoreBtns').style.display = 'flex';
     }
 
     function addPoints(f) {
         scores[f-1] += currentVal;
-        document.getElementById('s'+f).innerText = scores[f-1];
+        document.getElementById('s1').innerText = scores[0];
+        document.getElementById('s2').innerText = scores[1];
         turn = turn === 1 ? 2 : 1;
         document.getElementById('turnT').innerText = "دور: فريق " + turn;
         closeModal();
@@ -162,7 +178,6 @@
 
     function closeModal() {
         document.getElementById('qModal').style.display = 'none';
-        clearInterval(clock);
     }
 </script>
 </body>
