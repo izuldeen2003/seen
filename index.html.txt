@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة سين جيم الذكية</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --main-bg: #0f172a; --card-bg: #1e293b; --accent: #3b82f6; --text: #f8fafc; }
+        body { background-color: var(--main-bg); color: var(--text); font-family: 'Cairo', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        .header { background: #1e293b; padding: 15px; display: flex; justify-content: space-around; font-size: 1.5rem; border-bottom: 3px solid var(--accent); }
+        .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; padding: 20px; flex-grow: 1; }
+        .category-header { background: var(--accent); padding: 10px; text-align: center; font-weight: bold; border-radius: 5px; }
+        .card { background: var(--card-bg); border: 1px solid #334155; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; color: #fbbf24; cursor: pointer; border-radius: 5px; transition: 0.3s; }
+        .card:hover { transform: scale(1.05); background: #334155; }
+        .card.used { opacity: 0.2; cursor: not-allowed; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
+        .timer { font-size: 4rem; color: #ef4444; margin-bottom: 20px; }
+        .question-box { font-size: 2.5rem; text-align: center; max-width: 800px; margin-bottom: 30px; }
+        .btn { padding: 15px 30px; border: none; border-radius: 8px; font-size: 1.2rem; cursor: pointer; margin: 10px; transition: 0.2s; }
+        .btn-blue { background: #3b82f6; color: white; }
+        .btn-green { background: #22c55e; color: white; }
+        .btn-red { background: #ef4444; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div id="team1-display">الفريق 1: <span id="score1">0</span></div>
+        <div style="color: #fbbf24;">دَوْر: <span id="current-turn">الفريق 1</span></div>
+        <div id="team2-display">الفريق 2: <span id="score2">0</span></div>
+    </div>
+
+    <div class="grid" id="game-board">
+        </div>
+
+    <div id="modal" class="modal">
+        <div id="timer" class="timer">20</div>
+        <div id="q-text" class="question-box">جاري تحميل السؤال...</div>
+        <div id="a-text" class="question-box" style="color: #22c55e; display: none;"></div>
+        
+        <div id="action-btns">
+            <button class="btn btn-blue" onclick="reveal()">كشف الإجابة</button>
+        </div>
+
+        <div id="score-btns" style="display: none;">
+            <p>من حصل على النقاط؟</p>
+            <button class="btn btn-green" onclick="updateScore(1)">فريق 1 ✅</button>
+            <button class="btn btn-green" onclick="updateScore(2)">فريق 2 ✅</button>
+            <button class="btn btn-red" onclick="closeModal()">لا أحد ❌</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. إعداداتك الخاصة (يجب تعبئتها) ---
+        const SB_URL = https://jbwzdqpunqjplsbuqzyz.supabase.co;
+        const SB_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impid3pkcXB1bnFqcGxzYnVxenl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk1MDM5MjksImV4cCI6MjA4NTA3OTkyOX0.Suo1taENL5AUXolijAl8ytX9F8THgxPKFsoejo0NHXY;
+        const GEMINI_KEY =AIzaSyB_D649NZ6bMTB98CEpV1gcSzZiaz4uuZk;
+
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+        let scores = { 1: 0, 2: 0 };
+        let turn = 1;
+        let activePoints = 0;
+        let timeLeft = 20;
+        let timerIdx;
+
+        // --- 2. جلب الأسئلة من Gemini تلقائياً ---
+        async function getQuestionsFromAI(category) {
+            const prompt = أعطني 6 أسئلة فريدة لفئة "${category}" بتنسيق JSON: [{"q":"..","a":"..","p":200},{"q":"..","a":"..","p":400},{"q":"..","a":"..","p":600}]. كرر كل قيمة مرتين.;try {
+                const res = await fetch(https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}, {
+                    method: 'POST',
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                const json = await res.json();
+                const text = json.candidates[0].content.parts[0].text;
+                const cleanJson = JSON.parse(text.substring(text.indexOf('['), text.lastIndexOf(']') + 1));
+                
+                // تخزين الأسئلة في Supabase
+                for (let q of cleanJson) {
+                    await _supabase.from('questions').insert({
+                        category_name: category,
+                        question_text: q.q,
+                        answer: q.a,
+                        points: q.p
+                    });
+                }
+                return cleanJson;
+            } catch (e) { console.error("خطأ في الذكاء الاصطناعي", e); }
+        }
+
+        // --- 3. بناء لوحة اللعبة ---
+        const categories = ["باب الحارة", "رياضة", "تاريخ", "عواصم", "أنمي", "علوم"]; // يمكنك تغييرها أو جعلها عشوائية من الـ 30
+
+        async function initBoard() {
+            const board = document.getElementById('game-board');
+            board.innerHTML = '';
+            
+            for (let cat of categories) {
+                let col = document.createElement('div');
+                col.innerHTML = <div class="category-header">${cat}</div>;
+                
+                [200, 200, 400, 400, 600, 600].forEach(pts => {
+                    let card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerText = pts;
+                    card.onclick = () => showQuestion(cat, pts, card);
+                    col.appendChild(card);
+                });
+                board.appendChild(col);
+            }
+        }
+
+        async function showQuestion(cat, pts, element) {
+            if (element.classList.contains('used')) return;
+            activePoints = pts;
+            document.getElementById('modal').style.display = 'flex';
+            
+            // جلب سؤال من الداتابيز
+            let { data } = await _supabase.from('questions')
+                .select('*').eq('category_name', cat).eq('points', pts).eq('used', false).limit(1);
+
+            if (!data || data.length === 0) {
+                document.getElementById('q-text').innerText = "جاري توليد سؤال جديد بالذكاء الاصطناعي...";
+                await getQuestionsFromAI(cat);
+                return showQuestion(cat, pts, element); // إعادة المحاولة بعد التحميل
+            }
+
+            const question = data[0];
+            document.getElementById('q-text').innerText = question.question_text;
+            document.getElementById('a-text').innerText = question.answer;
+            element.classList.add('used');
+            
+            // تحديث أن السؤال استُخدم
+            await _supabase.from('questions').update({ used: true }).eq('id', question.id);
+            
+            startTimer();
+        }
+
+        function startTimer() {
+            timeLeft = 20;
+            document.getElementById('timer').innerText = timeLeft;
+            timerIdx = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft;
+                if (timeLeft <= 0) { clearInterval(timerIdx); reveal(); }
+            }, 1000);
+        }
+
+        function reveal() {
+            clearInterval(timerIdx);
+            document.getElementById('a-text').style.display = 'block';
+            document.getElementById('action-btns').style.display = 'none';
+            document.getElementById('score-btns').style.display = 'block';
+        }
+
+        function updateScore(team) {scores[team] += activePoints;
+            document.getElementById(score${team}).innerText = scores[team];
+            turn = (turn === 1) ? 2 : 1;
+            document.getElementById('current-turn').innerText = الفريق ${turn};
+            closeModal();
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('a-text').style.display = 'none';
+            document.getElementById('action-btns').style.display = 'block';
+            document.getElementById('score-btns').style.display = 'none';
+        }
+
+        initBoard();
+    </script>
+</body>
+</html>
