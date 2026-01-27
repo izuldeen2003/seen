@@ -2,87 +2,146 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة سين جيم</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>سين جيم - النسخة النهائية</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        :root { --gold: #fcc201; --blue: #060ce9; --dark-blue: #02056e; --white: #ffffff; }
-        body { background: var(--dark-blue); color: var(--white); font-family: sans-serif; margin: 0; text-align: center; }
-        .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 20px; max-width: 500px; margin: auto; }
-        .cat-box { background: #000; border: 2px solid var(--gold); padding: 15px; cursor: pointer; border-radius: 8px; font-size: 1rem; }
-        .cat-box.active { background: var(--gold); color: #000; font-weight: bold; }
-        .btn { background: var(--gold); color: #000; padding: 15px 30px; border: none; font-weight: bold; border-radius: 10px; margin-top: 20px; cursor: pointer; font-size: 1.2rem; }
-        .header { background: #000; padding: 10px; border-bottom: 3px solid var(--gold); display: flex; justify-content: space-around; }
-        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 10px; }
-        .cell { background: var(--blue); border: 2px solid #000; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--gold); font-weight: bold; }
+        :root { --gold: #fcc201; --blue: #060ce9; --dark-blue: #02056e; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--dark-blue); color: white; font-family: sans-serif; margin: 0; padding: 0; text-align: center; }
+        .setup-container { padding: 20px; }
+        .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .cat-item { background: black; border: 2px solid var(--gold); padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .cat-item.active { background: var(--gold); color: black; }
+        .btn-start { background: var(--gold); color: black; border: none; padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border-radius: 50px; margin-top: 20px; display: none; width: 80%; cursor: pointer; }
+        .game-header { background: black; padding: 10px; border-bottom: 3px solid var(--gold); display: flex; justify-content: space-around; position: sticky; top: 0; z-index: 100; }
+        .game-board { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 10px; padding-bottom: 50px; }
+        .cat-section { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 5px; }
+        .cat-name { background: black; padding: 5px; color: var(--gold); font-weight: bold; margin-bottom: 5px; }
+        .vals-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+        .val-cell { background: var(--blue); border: 1px solid var(--gold); height: 70px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; color: var(--gold); border-radius: 5px; cursor: pointer; }
+        .val-cell.used { opacity: 0.3; color: transparent; pointer-events: none; }
+        .modal { position: fixed; inset: 0; background: var(--dark-blue); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 200; overflow-y: auto; }
     </style>
 </head>
 <body>
 
-<div id="setup-screen">
-    <h2 style="color: var(--gold); margin-top: 30px;">اختر 6 فئات لبدء اللعبة</h2>
-    <div id="cat-container" class="cat-grid">
-        </div>
-    <button id="start-btn" class="btn" style="display:none;" onclick="beginGame()">ابدأ اللعبة الآن</button>
+<div id="setupScreen" class="setup-container">
+    <h2 style="color:var(--gold)">اختر 6 فئات لبدء التحدي</h2>
+    <div id="catGrid" class="cat-grid"></div>
+    <button id="startBtn" class="btn-start" onclick="startGame()">ابدأ اللعبة</button>
 </div>
 
-<div id="main-game" style="display:none;">
-    <div class="header">
-        <div>فريق 1: <span id="score1">0</span></div>
-        <div>فريق 2: <span id="score2">0</span></div>
+<div id="gameScreen" style="display:none">
+    <div class="game-header">
+        <div>فريق 1: <b id="s1">0</b></div>
+        <div id="turnInfo" style="color:var(--gold)">دور: فريق 1</div>
+        <div>فريق 2: <b id="s2">0</b></div>
     </div>
-    <div id="game-board" class="board"></div>
+    <div id="board" class="game-board"></div>
+</div>
+
+<div id="qModal" class="modal">
+    <div id="timer" style="font-size:3rem; color:red; margin-bottom:20px">20</div>
+    <div id="qText" style="font-size:1.8rem; margin-bottom:30px">جاري جلب السؤال...</div>
+    <div id="aText" style="display:none; color:var(--gold); font-size:1.5rem; margin-bottom:20px"></div>
+    <div id="modalBtns">
+        <button class="btn-start" style="display:inline-block" onclick="revealAnswer()">كشف الإجابة</button>
+    </div>
+    <div id="scoreBtns" style="display:none">
+        <button onclick="addPoints(1)" style="background:green; color:white; padding:10px; margin:5px">فريق 1 ✅</button>
+        <button onclick="addPoints(2)" style="background:green; color:white; padding:10px; margin:5px">فريق 2 ✅</button>
+        <button onclick="closeModal()" style="background:grey; color:white; padding:10px; margin:5px">خطأ ❌</button>
+    </div>
 </div>
 
 <script>
-    // بياناتك التي تعمل
     const G_API = 'AIzaSyB_D649NZ6bMTB98CEpV1gcSzZiaz4uuZk';
-    
-    const categories = ["باب الحارة", "رياضة", "تاريخ", "عواصم", "أمثال", "أنمي", "فضاء", "علوم", "سيارات", "أكلات"];
-    let selected = [];
+    const cats = ["باب الحارة", "رياضة", "تاريخ", "عواصم", "أمثال", "أنمي", "فضاء", "علوم", "سيارات", "أكلات"];
+    let selected = []; let scores = [0, 0]; let turn = 1; let currentVal = 0; let clock;
 
-    // وظيفة إظهار الفئات فوراً عند فتح الصفحة
-    function showCats() {
-        const container = document.getElementById('cat-container');
-        categories.forEach(c => {
-            let box = document.createElement('div');
-            box.className = 'cat-box';
-            box.innerText = c;
-            box.onclick = () => {
-                if(box.classList.contains('active')) {
-                    box.classList.remove('active');
-                    selected = selected.filter(x => x !== c);
-                } else if(selected.length < 6) {
-                    box.classList.add('active');
-                    selected.push(c);
-                }
-                document.getElementById('start-btn').style.display = selected.length === 6 ? 'inline-block' : 'none';
-            };
-            container.appendChild(box);
-        });
-    }
+    // ملء الفئات
+    const grid = document.getElementById('catGrid');
+    cats.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'cat-item';
+        div.innerText = c;
+        div.onclick = () => {
+            if(div.classList.contains('active')) {
+                div.classList.remove('active');
+                selected = selected.filter(x => x !== c);
+            } else if(selected.length < 6) {
+                div.classList.add('active');
+                selected.push(c);
+            }
+            document.getElementById('startBtn').style.display = selected.length === 6 ? 'inline-block' : 'none';
+        };
+        grid.appendChild(div);
+    });
 
-    function beginGame() {
-        document.getElementById('setup-screen').style.display = 'none';
-        document.getElementById('main-game').style.display = 'block';
-        const board = document.getElementById('game-board');
+    function startGame() {
+        document.getElementById('setupScreen').style.display = 'none';
+        document.getElementById('gameScreen').style.display = 'block';
+        const board = document.getElementById('board');
         selected.forEach(cat => {
-            let title = document.createElement('div');
-            title.style.gridColumn = "span 3";
-            title.style.background = "#000";
-            title.innerText = cat;
-            board.appendChild(title);
-            [200, 400, 600].forEach(val => {
-                let cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.innerText = val;
-                board.appendChild(cell);
-            });
+            const sec = document.createElement('div');
+            sec.className = 'cat-section';
+            sec.innerHTML = `<div class="cat-name">${cat}</div><div class="vals-row">
+                <div class="val-cell" onclick="ask('${cat}', 200, this)">200</div>
+                <div class="val-cell" onclick="ask('${cat}', 400, this)">400</div>
+                <div class="val-cell" onclick="ask('${cat}', 600, this)">600</div>
+            </div>`;
+            board.appendChild(sec);
         });
     }
 
-    // تشغيل الدالة فوراً
-    window.onload = showCats;
+    async function ask(cat, val, el) {
+        el.classList.add('used');
+        currentVal = val;
+        document.getElementById('qModal').style.display = 'flex';
+        document.getElementById('qText').innerText = "جاري الاتصال بـ Gemini...";
+        document.getElementById('aText').style.display = 'none';
+        document.getElementById('modalBtns').style.display = 'inline-block';
+        document.getElementById('scoreBtns').style.display = 'none';
+
+        try {
+            const prompt = `أعطني سؤالاً واحداً عن "${cat}" صعوبة ${val}. الرد JSON حصراً: {"q":"..","a":".."}`;
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${G_API}`, {
+                method: 'POST', body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            const d = await res.json();
+            const txt = d.candidates[0].content.parts[0].text;
+            const json = JSON.parse(txt.substring(txt.indexOf('{'), txt.lastIndexOf('}') + 1));
+            document.getElementById('qText').innerText = json.q;
+            document.getElementById('aText').innerText = "الإجابة: " + json.a;
+            startTimer();
+        } catch(e) { document.getElementById('qText').innerText = "خطأ! حاول مرة أخرى"; }
+    }
+
+    function startTimer() {
+        let s = 20; document.getElementById('timer').innerText = s;
+        clock = setInterval(() => { s--; document.getElementById('timer').innerText = s; if(s<=0){ clearInterval(clock); revealAnswer(); } }, 1000);
+    }
+
+    function revealAnswer() {
+        clearInterval(clock);
+        document.getElementById('aText').style.display = 'block';
+        document.getElementById('modalBtns').style.display = 'none';
+        document.getElementById('scoreBtns').style.display = 'block';
+    }
+
+    function addPoints(f) {
+        scores[f-1] += currentVal;
+        document.getElementById('s'+f).innerText = scores[f-1];
+        turn = turn === 1 ? 2 : 1;
+        document.getElementById('turnInfo').innerText = "دور: فريق " + turn;
+        closeModal();
+    }
+
+    function closeModal() {
+        document.getElementById('qModal').style.display = 'none';
+        clearInterval(clock);
+    }
 </script>
 </body>
 </html>
