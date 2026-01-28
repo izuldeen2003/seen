@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تحدي سين جيم AI - المصحح</title>
+    <title>تحدي سين جيم AI - نسخة Hugging Face</title>
     <style>
         :root { --gold: #fcc201; --orange: #ff6600; --dark-orange: #4a1c00; --accent: #ff9933; }
-        body { background: var(--dark-orange); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; text-align: center; overflow: hidden; }
+        body { background: var(--dark-orange); color: white; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; text-align: center; overflow: hidden; }
         .setup-container { padding: 20px; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
         .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; width: 100%; max-width: 600px; }
-        .cat-item { background: rgba(0,0,0,0.6); border: 2px solid var(--accent); padding: 12px; border-radius: 10px; cursor: pointer; }
+        .cat-item { background: rgba(0,0,0,0.6); border: 2px solid var(--accent); padding: 12px; border-radius: 10px; cursor: pointer; transition: 0.3s; }
         .cat-item.active { background: var(--orange); border-color: white; transform: scale(1.05); }
-        .btn-start { background: var(--orange); color: white; border: none; padding: 15px 40px; font-size: 1.3rem; border-radius: 50px; cursor: pointer; margin: 20px 0; }
+        .btn-start { background: var(--orange); color: white; border: none; padding: 15px 40px; font-size: 1.3rem; border-radius: 50px; cursor: pointer; margin: 20px 0; font-weight: bold; }
         .game-header { background: #1a0a00; padding: 15px; border-bottom: 3px solid var(--orange); display: flex; justify-content: space-around; font-weight: bold; }
         .game-board { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 15px; height: calc(100vh - 60px); overflow-y: auto; }
         .cat-section { background: rgba(255,255,255,0.07); border-radius: 15px; padding: 12px; border: 1px solid var(--accent); }
@@ -19,19 +19,21 @@
         .val-cell { background: var(--orange); height: 65px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; border-radius: 8px; cursor: pointer; }
         .val-cell.used { opacity: 0.15; pointer-events: none; }
         .modal { position: fixed; inset: 0; background: var(--dark-orange); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 25px; z-index: 1000; }
-        #loadingOverlay { position: fixed; inset:0; background: rgba(0,0,0,0.9); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:2000; }
+        #loadingOverlay { position: fixed; inset:0; background: rgba(0,0,0,0.95); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:2000; }
     </style>
 </head>
 <body>
 
 <div id="loadingOverlay">
-    <div id="loadingText" style="font-size: 1.5rem; color: var(--gold);">جاري التفكير في سؤال... 🤔</div>
+    <div style="font-size: 1.5rem; color: var(--gold); margin-bottom: 20px;">جاري توليد السؤال عبر Hugging Face... 🚀</div>
+    <div class="spinner"></div>
 </div>
 
 <div id="setupScreen" class="setup-container">
     <h1 style="color:var(--gold);">تحدي سين جيم AI 🏆</h1>
+    <p>اختر 6 فئات (استخدام نماذج مفتوحة المصدر مجانية):</p>
     <div id="catGrid" class="cat-grid"></div>
-    <button id="startBtn" class="btn-start" style="display:none" onclick="startGame()">انطلاق 🚀</button>
+    <button id="startBtn" class="btn-start" style="display:none" onclick="startGame()">ابدأ التحدي 🚀</button>
 </div>
 
 <div id="gameScreen" style="display:none">
@@ -44,20 +46,23 @@
 </div>
 
 <div id="qModal" class="modal">
-    <div id="timer" style="font-size: 3rem; color: yellow;">25</div>
-    <div id="qText" style="font-size: 1.8rem; margin: 20px;"></div>
-    <div id="aText" style="display:none; color: var(--gold); border: 1px dashed; padding: 10px;"></div>
-    <button id="revealBtn" class="btn-start" onclick="revealAnswer()">إظهار الجواب 🔓</button>
-    <div id="scoreBtns" style="display:none; gap:10px;">
-        <button onclick="addPoints(1)" style="background:green; color:white; padding:10px;">صح ف1</button>
-        <button onclick="addPoints(2)" style="background:green; color:white; padding:10px;">صح ف2</button>
-        <button onclick="closeModal()" style="background:red; color:white; padding:10px;">خطأ</button>
+    <div id="timer" style="font-size: 3rem; color: yellow; font-weight: bold;">25</div>
+    <div id="qText" style="font-size: 1.8rem; margin: 30px; line-height: 1.4;"></div>
+    <div id="aText" style="display:none; color: var(--gold); border: 2px dashed; padding: 15px; border-radius: 10px; background: rgba(0,0,0,0.3); margin-bottom: 20px; width: 100%;"></div>
+    <button id="revealBtn" class="btn-start" onclick="revealAnswer()">إظهار الإجابة 🔓</button>
+    <div id="scoreBtns" style="display:none; gap:10px; width: 100%;">
+        <button onclick="addPoints(1)" style="flex:1; background:#28a745; color:white; border:none; padding:15px; border-radius:10px;">فريق 1 ✅</button>
+        <button onclick="addPoints(2)" style="flex:1; background:#28a745; color:white; border:none; padding:15px; border-radius:10px;">فريق 2 ✅</button>
+        <button onclick="closeModal()" style="flex:1; background:#dc3545; color:white; border:none; padding:15px; border-radius:10px;">خطأ ❌</button>
     </div>
 </div>
 
 <script>
-    let API_KEY = "";
-    const categories = ["القرآن الكريم", "السيرة النبوية", "رياضة", "علوم", "تاريخ", "أنمي", "تقنية", "فضاء", "أمثال", "جغرافيا"];
+    let HF_TOKEN = ""; // سيتم طلبه عند البدء
+    // نموذج قوي وسريع يدعم العربية
+    const MODEL_ID = "mistralai/Mistral-7B-Instruct-v0.2"; 
+
+    const categories = ["القرآن الكريم", "السيرة النبوية", "رياضة", "علوم", "تاريخ", "أنمي", "تقنية", "فضاء", "أمثال", "جغرافيا", "سيارات", "أفلام", "عجائب الدنيا", "أدب", "اختراعات"];
     let selectedCats = []; let scores = [0, 0]; let turn = 1; let currentVal = 0; let clock;
 
     const grid = document.getElementById('catGrid');
@@ -78,15 +83,16 @@
     });
 
     function startGame() {
-        API_KEY = prompt("أدخل مفتاح OpenAI API:");
-        if (!API_KEY) return;
+        HF_TOKEN = prompt("أدخل مفتاح Hugging Face (Access Token): \n(يمكنك الحصول عليه مجاناً من إعدادات حسابك في Hugging Face)");
+        if (!HF_TOKEN) return;
+
         document.getElementById('setupScreen').style.display = 'none';
         document.getElementById('gameScreen').style.display = 'block';
         const board = document.getElementById('board');
         selectedCats.forEach(cat => {
             const sec = document.createElement('div');
             sec.className = 'cat-section';
-            sec.innerHTML = `<div style="color:var(--gold); font-weight:bold;">${cat}</div><div class="vals-row">
+            sec.innerHTML = `<div style="color:var(--gold); font-weight:bold; font-size:1.2rem; margin-bottom:10px;">${cat}</div><div class="vals-row">
                 <div class="val-cell" onclick="handleCellClick('${cat}', 200, this)">200</div>
                 <div class="val-cell" onclick="handleCellClick('${cat}', 400, this)">400</div>
                 <div class="val-cell" onclick="handleCellClick('${cat}', 600, this)">600</div>
@@ -101,40 +107,38 @@
         document.getElementById('loadingOverlay').style.display = 'flex';
         
         try {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
+            const promptMsg = `<s>[INST] أنت خبير مسابقات ثقافية عربية. أعطني سؤالاً واحداً وجوابه في فئة "${cat}" وبمستوى صعوبة "${val}".
+            يجب أن تكون الإجابة بصيغة JSON فقط كالتالي:
+            {"q": "السؤال هنا؟", "a": "الجواب هنا"} [/INST]</s>`;
+
+            const response = await fetch(`https://api-inference.huggingface.co/models/${MODEL_ID}`, {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY.trim()}`
+                    "Authorization": `Bearer ${HF_TOKEN.trim()}`,
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    model: "gpt-3.5-turbo",
-                    messages: [{
-                        role: "system", 
-                        content: "You are a quiz master. Always respond with raw JSON only. Format: {\"q\": \"question\", \"a\": \"answer\"}"
-                    }, {
-                        role: "user", 
-                        content: `اعطني سؤال وجواب عن ${cat} بصعوبة ${val}`
-                    }],
-                    temperature: 0.5
+                    inputs: promptMsg,
+                    parameters: { max_new_tokens: 200, return_full_text: false }
                 })
             });
 
-            const data = await response.json();
+            const result = await response.json();
             
-            if (data.error) {
-                throw new Error(data.error.message);
-            }
-
-            const cleanContent = data.choices[0].message.content.trim();
-            const questionData = JSON.parse(cleanContent);
+            // تنظيف النص المستخرج وتحويله لـ JSON
+            let text = result[0].generated_text;
+            let jsonStart = text.indexOf('{');
+            let jsonEnd = text.lastIndexOf('}') + 1;
+            let jsonString = text.substring(jsonStart, jsonEnd);
+            
+            const questionData = JSON.parse(jsonString);
             
             document.getElementById('loadingOverlay').style.display = 'none';
             showModal(questionData);
 
         } catch (err) {
             document.getElementById('loadingOverlay').style.display = 'none';
-            alert("حدث خطأ: " + err.message);
+            alert("حدث خطأ في الاتصال: تأكد من الـ Token أو حاول مرة أخرى.");
             console.error(err);
         }
     }
@@ -142,7 +146,7 @@
     function showModal(data) {
         document.getElementById('qModal').style.display = 'flex';
         document.getElementById('qText').innerText = data.q;
-        document.getElementById('aText').innerText = data.a;
+        document.getElementById('aText').innerText = "الإجابة: " + data.a;
         document.getElementById('aText').style.display = 'none';
         document.getElementById('revealBtn').style.display = 'block';
         document.getElementById('scoreBtns').style.display = 'none';
@@ -176,5 +180,18 @@
 
     function closeModal() { document.getElementById('qModal').style.display = 'none'; }
 </script>
+
+<style>
+    .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid var(--gold);
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+
 </body>
 </html>
