@@ -3,110 +3,144 @@
 <head>
 <meta charset="UTF-8">
 <title>Sin Game Pro</title>
+
 <style>
 body {
-  font-family: Arial;
-  background: #111;
-  color: white;
-  text-align: center;
+  background:#0b0b0b;
+  color:white;
+  font-family:Tahoma;
+  text-align:center;
 }
-.container {
-  margin-top: 50px;
+
+.box {
+  width:80%;
+  margin:auto;
+  margin-top:40px;
+  border:2px solid #444;
+  padding:20px;
+  border-radius:15px;
 }
+
 button {
-  font-size: 20px;
-  padding: 10px 20px;
-  margin: 10px;
-  cursor: pointer;
+  font-size:18px;
+  padding:10px 20px;
+  margin:8px;
+  cursor:pointer;
 }
+
 #question {
-  font-size: 28px;
-  margin: 30px;
+  font-size:26px;
+  margin:20px;
 }
-.score {
-  font-size: 20px;
+
+#answer {
+  font-size:22px;
+  color:#00ffcc;
+  display:none;
 }
+
 .timer {
-  font-size: 22px;
-  color: yellow;
+  color:yellow;
+  font-size:22px;
+}
+
+.score {
+  font-size:20px;
+  margin-bottom:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="box">
   <h1>🎮 Sin Game</h1>
 
   <div class="score">
-    فريق 1: <span id="score1">0</span> |
-    فريق 2: <span id="score2">0</span>
+    فريق 1: <span id="s1">0</span> |
+    فريق 2: <span id="s2">0</span>
   </div>
 
-  <div class="timer">الوقت: <span id="time">30</span></div>
+  <div class="timer">⏱️ <span id="time">30</span></div>
 
-  <div id="question">اضغط "سؤال جديد"</div>
+  <div id="question">اضغط سؤال جديد</div>
+  <div id="answer"></div>
 
-  <button onclick="newQuestion()">سؤال جديد</button><br>
+  <button onclick="newQuestion()">🎲 سؤال جديد</button><br>
+
+  <button onclick="showAnswer()">👁️ إظهار الإجابة</button><br>
 
   <button onclick="correct(1)">✔️ صح فريق 1</button>
-  <button onclick="correct(2)">✔️ صح فريق 2</button><br>
+  <button onclick="correct(2)">✔️ صح فريق 2</button>
+  <button onclick="wrong()">❌ خطأ</button><br>
 
-  <button onclick="wrong()">❌ خطأ</button>
+  <button onclick="finish()">🏁 إنهاء اللعبة</button>
 </div>
 
 <script>
-// بنك أسئلة (تقدر تضيف بلا حدود)
+// بنك أسئلة (تضيف بلا حدود)
 const questions = [
-  "ما هي عاصمة العراق؟",
-  "كم عدد كواكب المجموعة الشمسية؟",
-  "من هو أول نبي؟",
-  "ما هو أكبر محيط في العالم؟",
-  "كم عدد ألوان قوس قزح؟",
-  "ما اسم أسرع حيوان بري؟"
+  {q:"ما عاصمة العراق؟", a:"بغداد"},
+  {q:"كم عدد كواكب المجموعة الشمسية؟", a:"8"},
+  {q:"من هو أول نبي؟", a:"آدم"},
+  {q:"ما أكبر محيط في العالم؟", a:"المحيط الهادئ"},
+  {q:"كم عدد ألوان قوس قزح؟", a:"7"}
 ];
 
-let score1 = 0;
-let score2 = 0;
-let time = 30;
-let timer;
+let score1=0, score2=0;
+let time=30, timer;
+let currentAnswer="";
 
-// سؤال عشوائي
-function newQuestion() {
+function newQuestion(){
   clearInterval(timer);
-  time = 30;
-  document.getElementById("time").innerText = time;
+  time=30;
+  document.getElementById("time").innerText=time;
+  document.getElementById("answer").style.display="none";
 
-  const q = questions[Math.floor(Math.random() * questions.length)];
-  document.getElementById("question").innerText = q;
+  const r = questions[Math.floor(Math.random()*questions.length)];
+  document.getElementById("question").innerText = r.q;
+  document.getElementById("answer").innerText = "الإجابة: "+r.a;
+  currentAnswer = r.a;
 
-  timer = setInterval(() => {
+  timer = setInterval(()=>{
     time--;
-    document.getElementById("time").innerText = time;
-    if (time === 0) {
+    document.getElementById("time").innerText=time;
+    if(time===0){
       clearInterval(timer);
-      document.getElementById("question").innerText = "⏱️ انتهى الوقت!";
+      document.getElementById("question").innerText="⏱️ انتهى الوقت";
     }
-  }, 1000);
+  },1000);
 }
 
-// صح
-function correct(team) {
+function showAnswer(){
+  document.getElementById("answer").style.display="block";
+}
+
+function correct(team){
   clearInterval(timer);
-  if (team === 1) {
+  if(team===1){
     score1++;
-    document.getElementById("score1").innerText = score1;
+    document.getElementById("s1").innerText=score1;
   } else {
     score2++;
-    document.getElementById("score2").innerText = score2;
+    document.getElementById("s2").innerText=score2;
   }
-  document.getElementById("question").innerText = "✅ إجابة صحيحة!";
+  document.getElementById("question").innerText="✅ إجابة صحيحة";
 }
 
-// خطأ
-function wrong() {
+function wrong(){
   clearInterval(timer);
-  document.getElementById("question").innerText = "❌ إجابة خاطئة!";
+  document.getElementById("question").innerText="❌ إجابة خاطئة";
+}
+
+function finish(){
+  clearInterval(timer);
+  let winner="";
+  if(score1>score2) winner="🏆 فاز فريق 1";
+  else if(score2>score1) winner="🏆 فاز فريق 2";
+  else winner="🤝 تعادل";
+
+  document.body.innerHTML = `<h1>${winner}</h1><h2>${score1} - ${score2}</h2>`;
 }
 </script>
 
