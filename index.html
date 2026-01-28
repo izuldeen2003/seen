@@ -1,678 +1,114 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تحدي سين جيم العربي المجاني</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { 
-            --gold: #fcc201; 
-            --orange: #ff6600; 
-            --dark-orange: #4a1c00; 
-            --accent: #ff9933;
-            --green: #28a745;
-            --red: #dc3545;
-            --blue: #17a2b8;
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: linear-gradient(135deg, var(--dark-orange) 0%, #331800 100%); color: white; font-family: 'Segoe UI', 'Arial', 'Tahoma', sans-serif; margin: 0; text-align: center; overflow-x: hidden; }
-        .setup-container { padding: 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; width: 100%; max-width: 700px; }
-        .cat-item { background: linear-gradient(145deg, rgba(0,0,0,0.7), rgba(50,20,0,0.8)); border: 3px solid var(--accent); padding: 15px; border-radius: 15px; cursor: pointer; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-        .cat-item:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
-        .cat-item.active { background: linear-gradient(145deg, var(--orange), #ff8533); border-color: var(--gold); color: white; font-weight: bold; transform: scale(1.05); }
-        .btn-start { background: linear-gradient(to right, var(--orange), #ff8533); color: white; border: none; padding: 18px 50px; font-size: 1.4rem; font-weight: bold; border-radius: 50px; margin: 30px 0; cursor: pointer; box-shadow: 0 6px 0 #b34700, 0 10px 20px rgba(0,0,0,0.3); transition: all 0.2s; }
-        .btn-start:active { box-shadow: 0 3px 0 #b34700; transform: translateY(3px); }
-        .game-header { background: linear-gradient(90deg, #1a0a00, #331400); padding: 20px; border-bottom: 3px solid var(--orange); display: flex; justify-content: space-around; align-items: center; font-weight: bold; position: sticky; top: 0; z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .game-board { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 20px; max-height: calc(100vh - 80px); overflow-y: auto; }
-        .cat-section { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 15px; border: 2px solid var(--accent); backdrop-filter: blur(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .cat-name { color: var(--gold); font-weight: bold; margin-bottom: 15px; font-size: 1.5rem; text-shadow: 2px 2px 4px #000; }
-        .vals-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
-        .val-cell { background: linear-gradient(145deg, var(--orange), #ff8533); border: 3px solid #331400; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; color: white; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 0 #b34700; }
-        .val-cell:hover { transform: translateY(-3px); box-shadow: 0 6px 0 #b34700; }
-        .val-cell:active { transform: translateY(2px); box-shadow: 0 2px 0 #b34700; }
-        .val-cell.used { opacity: 0.2; pointer-events: none; background: #222; box-shadow: none; }
-        .modal { position: fixed; inset: 0; background: rgba(26, 10, 0, 0.95); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 25px; z-index: 1000; backdrop-filter: blur(5px); }
-        .timer { font-size: 5rem; color: #ffeb3b; font-weight: bold; margin-bottom: 20px; text-shadow: 0 0 20px #ffeb3b; font-family: 'Courier New', monospace; }
-        .q-text { font-size: 2rem; margin-bottom: 30px; line-height: 1.5; color: #fff; text-shadow: 1px 1px 3px #000; padding: 0 20px; max-width: 900px; }
-        .a-text { color: var(--gold); font-size: 1.8rem; margin: 30px 0; padding: 20px; border: 3px dashed var(--gold); border-radius: 15px; background: rgba(0,0,0,0.5); width: 100%; max-width: 700px; text-shadow: 1px 1px 3px #000; }
-        .score-btns { display: flex; gap: 15px; width: 100%; max-width: 700px; margin-top: 20px; }
-        .s-btn { flex: 1; padding: 20px; border-radius: 12px; border: none; font-weight: bold; color: white; cursor: pointer; font-size: 1.2rem; transition: all 0.2s; box-shadow: 0 4px 0 rgba(0,0,0,0.2); }
-        .s-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.2); }
-        .loading { font-size: 1.8rem; color: var(--gold); margin: 30px; display: flex; align-items: center; justify-content: center; gap: 15px; }
-        .options { margin: 25px 0; display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; max-width: 700px; }
-        .option-btn { background: linear-gradient(145deg, #333, #444); color: white; border: 2px solid var(--accent); padding: 18px; border-radius: 10px; cursor: pointer; transition: all 0.3s; font-size: 1.2rem; text-align: center; }
-        .option-btn:hover { background: linear-gradient(145deg, #444, #555); transform: translateY(-3px); }
-        .option-btn.correct { background: linear-gradient(145deg, var(--green), #34ce57); border-color: #1e7e34; }
-        .option-btn.wrong { background: linear-gradient(145deg, var(--red), #e4606d); border-color: #bd2130; }
-        .option-btn.disabled { opacity: 0.7; cursor: not-allowed; }
-        .hint { color: #aaa; font-size: 1rem; margin-top: 5px; }
-        
-        /* تصميم العنوان */
-        h1 { 
-            color: var(--gold); 
-            text-shadow: 3px 3px 6px #000, 0 0 20px var(--orange); 
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            color: #ffcc80;
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-        }
-        
-        /* أنيميشن التحميل */
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: var(--gold);
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
-        /* تنسيق للجوال */
-        @media (max-width: 768px) {
-            .cat-grid { grid-template-columns: 1fr; }
-            .vals-row { grid-template-columns: repeat(3, 1fr); }
-            .val-cell { height: 70px; font-size: 1.5rem; }
-            .q-text { font-size: 1.6rem; }
-            .timer { font-size: 4rem; }
-            .score-btns { flex-direction: column; }
-        }
-        
-        /* فئات ملونة */
-        .cat-item[data-cat="القرآن الكريم"] { border-color: #28a745; }
-        .cat-item[data-cat="السيرة النبوية"] { border-color: #17a2b8; }
-        .cat-item[data-cat="علوم"] { border-color: #6610f2; }
-        .cat-item[data-cat="تاريخ"] { border-color: #fd7e14; }
-        .cat-item[data-cat="جغرافيا"] { border-color: #20c997; }
-        .cat-item[data-cat="أدب"] { border-color: #e83e8c; }
-    </style>
+<meta charset="UTF-8">
+<title>Sin Game Pro</title>
+<style>
+body {
+  font-family: Arial;
+  background: #111;
+  color: white;
+  text-align: center;
+}
+.container {
+  margin-top: 50px;
+}
+button {
+  font-size: 20px;
+  padding: 10px 20px;
+  margin: 10px;
+  cursor: pointer;
+}
+#question {
+  font-size: 28px;
+  margin: 30px;
+}
+.score {
+  font-size: 20px;
+}
+.timer {
+  font-size: 22px;
+  color: yellow;
+}
+</style>
 </head>
+
 <body>
 
-<div id="setupScreen" class="setup-container">
-    <h1><i class="fas fa-trophy"></i> تحدي سين جيم العربي</h1>
-    <p class="subtitle">اختر 6 فئات للبدء في التحدي</p>
-    
-    <div class="loading" id="loadingCats" style="display:none">
-        <div class="spinner"></div>
-        <span>جاري تحميل الفئات...</span>
-    </div>
-    
-    <div id="catGrid" class="cat-grid"></div>
-    
-    <div id="selectedCats" style="margin: 15px 0; min-height: 40px; color: var(--gold); font-weight: bold;"></div>
-    
-    <button id="startBtn" class="btn-start" style="display:none" onclick="startGame()">
-        <i class="fas fa-rocket"></i> انطلاق التحدي
-    </button>
-    
-    <div style="margin-top: 30px; color: #ccc; font-size: 0.9rem;">
-        <p><i class="fas fa-info-circle"></i> جميع الأسئلة باللغة العربية وتُولد تلقائياً</p>
-    </div>
-</div>
+<div class="container">
+  <h1>🎮 Sin Game</h1>
 
-<div id="gameScreen" style="display:none">
-    <div class="game-header">
-        <div style="color:#4dff88; font-size: 1.3rem;">
-            <i class="fas fa-users"></i> فريق 1: <span id="s1">0</span>
-        </div>
-        <div id="turnT" style="color:var(--gold); font-size: 1.3rem;">
-            <i class="fas fa-user-clock"></i> دور: فريق 1
-        </div>
-        <div style="color:#4dff88; font-size: 1.3rem;">
-            <i class="fas fa-users"></i> فريق 2: <span id="s2">0</span>
-        </div>
-    </div>
-    <div id="board" class="game-board"></div>
-</div>
+  <div class="score">
+    فريق 1: <span id="score1">0</span> |
+    فريق 2: <span id="score2">0</span>
+  </div>
 
-<div id="qModal" class="modal">
-    <div id="timer" class="timer">30</div>
-    <div id="qText" class="q-text"></div>
-    <div id="optionsContainer" class="options" style="display:none"></div>
-    <div id="aText" class="a-text" style="display:none"></div>
-    
-    <div style="display: flex; gap: 15px; margin-top: 20px;">
-        <button id="revealBtn" class="btn-start" onclick="revealAnswer()" style="display:none; padding: 15px 30px;">
-            <i class="fas fa-unlock"></i> كشف الإجابة
-        </button>
-        <button class="btn-start" onclick="closeModal()" style="background: var(--red); padding: 15px 30px;">
-            <i class="fas fa-times"></i> إغلاق
-        </button>
-    </div>
-    
-    <div id="scoreBtns" class="score-btns" style="display:none">
-        <button class="s-btn" style="background:linear-gradient(145deg, var(--green), #34ce57)" onclick="addPoints(1)">
-            <i class="fas fa-check"></i> فريق 1 (صحيح)
-        </button>
-        <button class="s-btn" style="background:linear-gradient(145deg, var(--blue), #5bc0de)" onclick="addPoints(2)">
-            <i class="fas fa-check"></i> فريق 2 (صحيح)
-        </button>
-        <button class="s-btn" style="background:linear-gradient(145deg, var(--red), #e4606d)" onclick="closeModal()">
-            <i class="fas fa-times"></i> خطأ للطرفين
-        </button>
-    </div>
+  <div class="timer">الوقت: <span id="time">30</span></div>
+
+  <div id="question">اضغط "سؤال جديد"</div>
+
+  <button onclick="newQuestion()">سؤال جديد</button><br>
+
+  <button onclick="correct(1)">✔️ صح فريق 1</button>
+  <button onclick="correct(2)">✔️ صح فريق 2</button><br>
+
+  <button onclick="wrong()">❌ خطأ</button>
 </div>
 
 <script>
-// قاعدة بيانات الأسئلة العربية (مخزنة محلياً للبدء)
-const arabicQuestionsDB = {
-    "القرآن الكريم": {
-        200: [
-            {q: "كم عدد سور القرآن الكريم؟", a: "114 سورة", options: ["100 سورة", "114 سورة", "120 سورة", "99 سورة"]},
-            {q: "ما هي السورة التي تبدأ بـ 'الـم'؟", a: "سورة البقرة", options: ["سورة البقرة", "سورة آل عمران", "سورة النساء", "سورة المائدة"]}
-        ],
-        400: [
-            {q: "ما هي السورة التي تسمى 'قلب القرآن'؟", a: "سورة يس", options: ["سورة البقرة", "سورة يس", "سورة الرحمن", "سورة الفاتحة"]},
-            {q: "كم عدد آيات سورة الفاتحة؟", a: "7 آيات", options: ["5 آيات", "6 آيات", "7 آيات", "8 آيات"]}
-        ],
-        600: [
-            {q: "من هو الصحابي الذي جمع القرآن في مصحف واحد؟", a: "زيد بن ثابت", options: ["عثمان بن عفان", "علي بن أبي طالب", "زيد بن ثابت", "أبو بكر الصديق"]},
-            {q: "ما هي أطول آية في القرآن؟", a: "آية الدين في سورة البقرة", options: ["آية الكرسي", "آية الدين في سورة البقرة", "آية نور", "آية البر"]}
-        ]
-    },
-    "السيرة النبوية": {
-        200: [
-            {q: "كم كان عمر النبي ﷺ عندما توفي؟", a: "63 سنة", options: ["60 سنة", "63 سنة", "65 سنة", "70 سنة"]},
-            {q: "من هي أول زوجة للنبي ﷺ؟", a: "خديجة بنت خويلد", options: ["عائشة", "خديجة بنت خويلد", "سودة", "حفصة"]}
-        ],
-        400: [
-            {q: "في أي عام كانت الهجرة النبوية؟", a: "622 ميلادي", options: ["620 ميلادي", "622 ميلادي", "624 ميلادي", "630 ميلادي"]},
-            {q: "كم غزوة شارك فيها النبي ﷺ؟", a: "27 غزوة", options: ["20 غزوة", "25 غزوة", "27 غزوة", "30 غزوة"]}
-        ],
-        600: [
-            {q: "ما اسم والد النبي محمد ﷺ؟", a: "عبد الله بن عبد المطلب", options: ["عبد المطلب", "عبد الله بن عبد المطلب", "أبو طالب", "العباس"]},
-            {q: "من هو الصحابي الذي بشره النبي ﷺ بالجنة وهو على قيد الحياة؟", a: "عمر بن الخطاب", options: ["أبو بكر", "عمر بن الخطاب", "عثمان", "علي"]}
-        ]
-    },
-    "علوم": {
-        200: [
-            {q: "ما هو الغاز الذي نتنفسه؟", a: "الأكسجين", options: ["الأكسجين", "ثاني أكسيد الكربون", "النيتروجين", "الهيدروجين"]},
-            {q: "كم عدد أضلاع المثلث؟", a: "3 أضلاع", options: ["3 أضلاع", "4 أضلاع", "5 أضلاع", "6 أضلاع"]}
-        ],
-        400: [
-            {q: "ما هو الكوكب الأقرب إلى الشمس؟", a: "عطارد", options: ["الزهرة", "عطارد", "الأرض", "المريخ"]},
-            {q: "ما هي أصغر عظمة في جسم الإنسان؟", a: "عظمة الركاب في الأذن", options: ["عظمة الأنف", "عظمة الركاب في الأذن", "عظمة الرسغ", "عظمة الكاحل"]}
-        ],
-        600: [
-            {q: "ما هو العنصر الكيميائي الذي رمزه 'Au'؟", a: "الذهب", options: ["الفضة", "الذهب", "النحاس", "الحديد"]},
-            {q: "من هو مكتشف الدورة الدموية؟", a: "ابن النفيس", options: ["ابن سينا", "ابن النفيس", "الخوارزمي", "ابن الهيثم"]}
-        ]
-    },
-    "تاريخ": {
-        200: [
-            {q: "من هو مؤسس الدولة العباسية؟", a: "أبو العباس السفاح", options: ["هارون الرشيد", "أبو العباس السفاح", "المأمون", "المعتصم"]},
-            {q: "في أي عام وقعت معركة حطين؟", a: "1187 ميلادي", options: ["1099 ميلادي", "1187 ميلادي", "1258 ميلادي", "1291 ميلادي"]}
-        ],
-        400: [
-            {q: "من هو قائد المسلمين في معركة اليرموك؟", a: "خالد بن الوليد", options: ["عمرو بن العاص", "خالد بن الوليد", "سعد بن أبي وقاص", "عمر بن الخطاب"]},
-            {q: "ما هي عاصمة الدولة الأموية؟", a: "دمشق", options: ["مكة", "المدينة", "دمشق", "بغداد"]}
-        ],
-        600: [
-            {q: "من هو آخر خليفة عباسي؟", a: "المستعصم بالله", options: ["المستنصر بالله", "المستعصم بالله", "الواثق بالله", "المقتدر بالله"]},
-            {q: "في أي عام سقطت غرناطة آخر معاقل المسلمين في الأندلس؟", a: "1492 ميلادي", options: ["1453 ميلادي", "1492 ميلادي", "1517 ميلادي", "1526 ميلادي"]}
-        ]
-    },
-    "جغرافيا": {
-        200: [
-            {q: "ما هي أكبر دولة في العالم مساحة؟", a: "روسيا", options: ["كندا", "الولايات المتحدة", "الصين", "روسيا"]},
-            {q: "ما هي عاصمة مصر؟", a: "القاهرة", options: ["الإسكندرية", "القاهرة", "الجيزة", "المنصورة"]}
-        ],
-        400: [
-            {q: "ما هو أطول نهر في العالم؟", a: "نهر النيل", options: ["نهر الأمازون", "نهر النيل", "نهر المسيسيبي", "نهر اليانغتسي"]},
-            {q: "أين تقع جبال الألب؟", a: "أوروبا", options: ["آسيا", "أمريكا الشمالية", "أوروبا", "أفريقيا"]}
-        ],
-        600: [
-            {q: "ما هي أصغر دولة في العالم؟", a: "الفاتيكان", options: ["موناكو", "الفاتيكان", "سان مارينو", "ليختنشتاين"]},
-            {q: "ما هو المضيق الذي يربط البحر الأحمر بخليج عدن؟", a: "مضيق باب المندب", options: ["مضيق جبل طارق", "مضيق هرمز", "مضيق باب المندب", "مضيق البوسفور"]}
-        ]
-    },
-    "أدب": {
-        200: [
-            {q: "من هو مؤلف كتاب 'الأيام'؟", a: "طه حسين", options: ["نجيب محفوظ", "طه حسين", "عباس العقاد", "توفيق الحكيم"]},
-            {q: "ما هي لغة الشعر؟", a: "العربية الفصحى", options: ["العامية", "العربية الفصحى", "الإنجليزية", "الفرنسية"]}
-        ],
-        400: [
-            {q: "من هو الشاعر الملقب بـ 'شاعر النيل'؟", a: "حافظ إبراهيم", options: ["أحمد شوقي", "حافظ إبراهيم", "نزار قباني", "محمود درويش"]},
-            {q: "ما هي الرواية التي كتبها الطيب صالح؟", a: "موسم الهجرة إلى الشمال", options: ["موسم الهجرة إلى الشمال", "اللص والكلاب", "ثلاثية غرناطة", "الحرافيش"]}
-        ],
-        600: [
-            {q: "من هو مؤلف كتاب 'المقدمة'؟", a: "ابن خلدون", options: ["ابن سينا", "ابن خلدون", "الجرجاني", "الجاحظ"]},
-            {q: "ما هو الاسم الحقيقي للشاعر 'المتنبي'؟", a: "أحمد بن الحسين", options: ["أبو تمام", "أبو نواس", "أحمد بن الحسين", "البحتري"]}
-        ]
-    }
-};
-
-// متغيرات اللعبة
-let selectedCats = []; 
-let scores = [0, 0]; 
-let turn = 1; 
-let currentVal = 0; 
-let clock;
-let currentQuestion = null;
-let usedQuestions = new Set(); // لتجنب تكرار الأسئلة
-
-// فئات اللعبة
-const categories = [
-    "القرآن الكريم", "السيرة النبوية", "علوم", "تاريخ", 
-    "جغرافيا", "أدب", "ثقافة عامة", "رياضة",
-    "فنون", "تقنية", "أطباق عالمية", "حيوانات",
-    "طب", "اقتصاد", "فلسفة", "لغات"
+// بنك أسئلة (تقدر تضيف بلا حدود)
+const questions = [
+  "ما هي عاصمة العراق؟",
+  "كم عدد كواكب المجموعة الشمسية؟",
+  "من هو أول نبي؟",
+  "ما هو أكبر محيط في العالم؟",
+  "كم عدد ألوان قوس قزح؟",
+  "ما اسم أسرع حيوان بري؟"
 ];
 
-// تهيئة قائمة الفئات
-function initCategories() {
-    const grid = document.getElementById('catGrid');
-    grid.innerHTML = '';
-    
-    // عرض 12 فئة عشوائية من القائمة
-    const shuffledCats = [...categories].sort(() => Math.random() - 0.5).slice(0, 12);
-    
-    shuffledCats.forEach(cat => {
-        const div = document.createElement('div');
-        div.className = 'cat-item'; 
-        div.innerText = cat;
-        div.setAttribute('data-cat', cat);
-        div.onclick = () => {
-            if(div.classList.contains('active')) {
-                div.classList.remove('active');
-                selectedCats = selectedCats.filter(c => c !== cat);
-            } else if(selectedCats.length < 6) {
-                div.classList.add('active');
-                selectedCats.push(cat);
-            }
-            updateSelectedCatsDisplay();
-            document.getElementById('startBtn').style.display = selectedCats.length === 6 ? 'block' : 'none';
-        };
-        grid.appendChild(div);
-    });
-}
+let score1 = 0;
+let score2 = 0;
+let time = 30;
+let timer;
 
-function updateSelectedCatsDisplay() {
-    const display = document.getElementById('selectedCats');
-    if (selectedCats.length > 0) {
-        display.innerHTML = `<i class="fas fa-check-circle"></i> الفئات المختارة: ${selectedCats.join('، ')}`;
-    } else {
-        display.innerHTML = '';
+// سؤال عشوائي
+function newQuestion() {
+  clearInterval(timer);
+  time = 30;
+  document.getElementById("time").innerText = time;
+
+  const q = questions[Math.floor(Math.random() * questions.length)];
+  document.getElementById("question").innerText = q;
+
+  timer = setInterval(() => {
+    time--;
+    document.getElementById("time").innerText = time;
+    if (time === 0) {
+      clearInterval(timer);
+      document.getElementById("question").innerText = "⏱️ انتهى الوقت!";
     }
+  }, 1000);
 }
 
-function startGame() {
-    document.getElementById('setupScreen').style.display = 'none';
-    document.getElementById('gameScreen').style.display = 'block';
-    const board = document.getElementById('board');
-    board.innerHTML = '';
-    
-    selectedCats.forEach(cat => {
-        const sec = document.createElement('div');
-        sec.className = 'cat-section';
-        sec.innerHTML = `
-            <div class="cat-name"><i class="fas fa-folder-open"></i> ${cat}</div>
-            <div class="vals-row">
-                <div class="val-cell" onclick="showQuestion('${cat}', 200, this)">200</div>
-                <div class="val-cell" onclick="showQuestion('${cat}', 400, this)">400</div>
-                <div class="val-cell" onclick="showQuestion('${cat}', 600, this)">600</div>
-            </div>
-        `;
-        board.appendChild(sec);
-    });
+// صح
+function correct(team) {
+  clearInterval(timer);
+  if (team === 1) {
+    score1++;
+    document.getElementById("score1").innerText = score1;
+  } else {
+    score2++;
+    document.getElementById("score2").innerText = score2;
+  }
+  document.getElementById("question").innerText = "✅ إجابة صحيحة!";
 }
 
-async function showQuestion(cat, val, el) {
-    if (el.classList.contains('used')) return;
-    
-    el.classList.add('used');
-    currentVal = val;
-    
-    document.getElementById('qModal').style.display = 'flex';
-    document.getElementById('qText').innerHTML = `<div class="loading"><div class="spinner"></div><span>جاري تحميل السؤال...</span></div>`;
-    document.getElementById('optionsContainer').style.display = 'none';
-    document.getElementById('aText').style.display = 'none';
-    document.getElementById('revealBtn').style.display = 'none';
-    document.getElementById('scoreBtns').style.display = 'none';
-    
-    // محاولة جلب سؤال من الإنترنت (API مجاني)
-    let questionData = await tryGetQuestionFromAPI(cat, val);
-    
-    // إذا فشل، استخدم الأسئلة المحلية
-    if (!questionData) {
-        questionData = getLocalQuestion(cat, val);
-    }
-    
-    if (questionData) {
-        displayQuestion(questionData, cat, val);
-    } else {
-        // إذا لم يوجد سؤال، استخدم سؤال بديل
-        document.getElementById('qText').innerHTML = "عذراً، لم نتمكن من تحميل سؤال. جاري استخدام سؤال بديل...";
-        setTimeout(() => {
-            const backupQuestion = getBackupQuestion(cat, val);
-            displayQuestion(backupQuestion, cat, val);
-        }, 1500);
-    }
+// خطأ
+function wrong() {
+  clearInterval(timer);
+  document.getElementById("question").innerText = "❌ إجابة خاطئة!";
 }
-
-async function tryGetQuestionFromAPI(cat, val) {
-    try {
-        // محاولة استخدام Trivia API (بالإنجليزية - لكن يمكن ترجمتها)
-        const difficulty = val === 200 ? 'easy' : val === 400 ? 'medium' : 'hard';
-        const categoryMap = {
-            "القرآن الكريم": 9, // الدين
-            "السيرة النبوية": 9,
-            "علوم": 17, // العلوم والطبيعة
-            "تاريخ": 23, // التاريخ
-            "جغرافيا": 22, // الجغرافيا
-            "أدب": 10, // الكتب
-            "ثقافة عامة": 9, // عام
-            "رياضة": 21, // الرياضة
-            "فنون": 25, // الفن
-            "تقنية": 18, // الكمبيوتر
-            "أطباق عالمية": 9, // عام
-            "حيوانات": 27, // الحيوانات
-            "طب": 9, // عام
-            "اقتصاد": 9, // عام
-            "فلسفة": 9, // عام
-            "لغات": 9 // عام
-        };
-        
-        const categoryId = categoryMap[cat] || 9;
-        
-        const response = await fetch(`https://opentdb.com/api.php?amount=1&category=${categoryId}&difficulty=${difficulty}&type=multiple&encode=url3986`);
-        const data = await response.json();
-        
-        if (data.results && data.results.length > 0) {
-            const question = data.results[0];
-            // ترجمة الأسئلة والأجوبة (بدائية)
-            const translatedQ = translateToArabic(decodeURIComponent(question.question));
-            const translatedA = translateToArabic(decodeURIComponent(question.correct_answer));
-            const translatedOptions = [
-                translatedA,
-                ...question.incorrect_answers.map(a => translateToArabic(decodeURIComponent(a)))
-            ];
-            
-            return {
-                q: translatedQ,
-                a: translatedA,
-                options: shuffleArray(translatedOptions)
-            };
-        }
-    } catch (error) {
-        console.log("فشل الاتصال بالإنترنت، استخدام الأسئلة المحلية");
-    }
-    
-    return null;
-}
-
-function translateToArabic(text) {
-    // ترجمة بدائية لبعض الكلمات الشائعة
-    const translations = {
-        "What": "ما",
-        "Who": "من",
-        "When": "متى",
-        "Where": "أين",
-        "Why": "لماذا",
-        "How": "كيف",
-        "Which": "أي",
-        "is": "هو",
-        "are": "هم",
-        "the": "",
-        "of": "من",
-        "in": "في",
-        "and": "و",
-        "to": "إلى",
-        "for": "لـ",
-        "with": "مع",
-        "by": "بواسطة",
-        "on": "على",
-        "at": "في",
-        "from": "من",
-        "as": "كما",
-        "into": "إلى",
-        "through": "خلال",
-        "during": "خلال",
-        "before": "قبل",
-        "after": "بعد",
-        "above": "فوق",
-        "below": "تحت",
-        "between": "بين",
-        "among": "بين",
-        "under": "تحت",
-        "over": "فوق",
-        "France": "فرنسا",
-        "Germany": "ألمانيا",
-        "Italy": "إيطاليا",
-        "Spain": "إسبانيا",
-        "England": "إنجلترا",
-        "China": "الصين",
-        "Japan": "اليابان",
-        "India": "الهند",
-        "Russia": "روسيا",
-        "USA": "الولايات المتحدة الأمريكية",
-        "Earth": "الأرض",
-        "Sun": "الشمس",
-        "Moon": "القمر",
-        "water": "الماء",
-        "air": "الهواء",
-        "fire": "النار",
-        "earth": "التراب",
-        "animal": "الحيوان",
-        "plant": "النبات",
-        "human": "الإنسان"
-    };
-    
-    let translated = text;
-    Object.keys(translations).forEach(english => {
-        const arabic = translations[english];
-        const regex = new RegExp(`\\b${english}\\b`, 'gi');
-        translated = translated.replace(regex, arabic);
-    });
-    
-    return translated;
-}
-
-function getLocalQuestion(cat, val) {
-    if (arabicQuestionsDB[cat] && arabicQuestionsDB[cat][val]) {
-        const questions = arabicQuestionsDB[cat][val];
-        // اختيار سؤال عشوائي غير مستخدم
-        const availableQuestions = questions.filter((_, index) => !usedQuestions.has(`${cat}-${val}-${index}`));
-        
-        if (availableQuestions.length > 0) {
-            const randomIndex = Math.floor(Math.random() * availableQuestions.length);
-            const originalIndex = questions.indexOf(availableQuestions[randomIndex]);
-            usedQuestions.add(`${cat}-${val}-${originalIndex}`);
-            return availableQuestions[randomIndex];
-        }
-    }
-    
-    // إذا لم توجد أسئلة في الفئة، استخدم فئة عامة
-    return getBackupQuestion(cat, val);
-}
-
-function getBackupQuestion(cat, val) {
-    const backupQuestions = {
-        200: [
-            {q: "ما هي عاصمة " + cat + "؟", a: "الإجابة تعتمد على الفئة", options: ["خيار 1", "خيار 2", "الإجابة تعتمد على الفئة", "خيار 4"]},
-            {q: "متى تأسست " + cat + "؟", a: "تاريخ غير معروف", options: ["1000 م", "1500 م", "تاريخ غير معروف", "2000 م"]}
-        ],
-        400: [
-            {q: "من هو مؤسس " + cat + "؟", a: "شخصية تاريخية", options: ["شخصية أ", "شخصية ب", "شخصية تاريخية", "شخصية د"]},
-            {q: "ما هو أهم إنجاز في " + cat + "؟", a: "إنجاز بارز", options: ["إنجاز 1", "إنجاز بارز", "إنجاز 3", "إنجاز 4"]}
-        ],
-        600: [
-            {q: "ما هو التحدي الأكبر في " + cat + "؟", a: "تحدي كبير", options: ["تحدي 1", "تحدي 2", "تحدي كبير", "تحدي 4"]},
-            {q: "كيف أثرت " + cat + " على العالم؟", a: "تأثير كبير", options: ["تأثير محدود", "تأثير كبير", "تأثير متوسط", "لا تأثير"]}
-        ]
-    };
-    
-    const questions = backupQuestions[val] || backupQuestions[200];
-    return questions[Math.floor(Math.random() * questions.length)];
-}
-
-function displayQuestion(questionData, cat, val) {
-    document.getElementById('qText').innerHTML = questionData.q;
-    document.getElementById('aText').innerHTML = `<i class="fas fa-lightbulb"></i> الإجابة الصحيحة: ${questionData.a}`;
-    
-    // إنشاء خيارات متعددة
-    const optionsContainer = document.getElementById('optionsContainer');
-    optionsContainer.innerHTML = '';
-    
-    if (questionData.options && questionData.options.length > 0) {
-        questionData.options.forEach(option => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerHTML = option;
-            btn.onclick = () => selectOption(btn, option === questionData.a);
-            optionsContainer.appendChild(btn);
-        });
-        optionsContainer.style.display = 'grid';
-        document.getElementById('revealBtn').style.display = 'none';
-    } else {
-        // إذا لم تكن هناك خيارات، اعرض زر كشف الإجابة مباشرة
-        document.getElementById('revealBtn').style.display = 'block';
-        optionsContainer.style.display = 'none';
-    }
-    
-    startTimer();
-}
-
-function selectOption(btn, isCorrect) {
-    const options = document.querySelectorAll('.option-btn');
-    options.forEach(opt => {
-        opt.disabled = true;
-        opt.classList.add('disabled');
-    });
-    
-    if(isCorrect) {
-        btn.classList.add('correct');
-    } else {
-        btn.classList.add('wrong');
-        // إظهار الإجابة الصحيحة
-        const correctAnswer = document.getElementById('aText').textContent.replace('الإجابة الصحيحة: ', '');
-        options.forEach(opt => {
-            if(opt.textContent === correctAnswer) {
-                opt.classList.add('correct');
-            }
-        });
-    }
-    
-    document.getElementById('revealBtn').style.display = 'block';
-}
-
-function shuffleArray(array) {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-    return newArray;
-}
-
-function startTimer() {
-    let s = 30; 
-    document.getElementById('timer').innerText = s;
-    clearInterval(clock);
-    clock = setInterval(() => {
-        s--; 
-        document.getElementById('timer').innerText = s;
-        
-        // تغيير لون المؤقت عندما يقل الوقت
-        if(s <= 10) {
-            document.getElementById('timer').style.color = '#ff4444';
-        } else if(s <= 20) {
-            document.getElementById('timer').style.color = '#ffaa00';
-        }
-        
-        if(s <= 0) { 
-            clearInterval(clock); 
-            revealAnswer(); 
-        }
-    }, 1000);
-}
-
-function revealAnswer() {
-    clearInterval(clock);
-    document.getElementById('aText').style.display = 'block';
-    document.getElementById('revealBtn').style.display = 'none';
-    document.getElementById('scoreBtns').style.display = 'flex';
-    
-    // تعطيل جميع الخيارات
-    const options = document.querySelectorAll('.option-btn');
-    options.forEach(opt => {
-        opt.disabled = true;
-        opt.classList.add('disabled');
-    });
-}
-
-function addPoints(team) {
-    scores[team-1] += currentVal;
-    document.getElementById('s1').innerText = scores[0];
-    document.getElementById('s2').innerText = scores[1];
-    turn = (turn === 1) ? 2 : 1;
-    document.getElementById('turnT').innerHTML = `<i class="fas fa-user-clock"></i> دور: فريق ${turn}`;
-    closeModal();
-}
-
-function closeModal() {
-    document.getElementById('qModal').style.display = 'none';
-    // إعادة تعيين لون المؤقت
-    document.getElementById('timer').style.color = '#ffeb3b';
-}
-
-// تهيئة اللعبة عند التحميل
-window.onload = function() {
-    initCategories();
-    
-    // إضافة تأثيرات عند التحميل
-    setTimeout(() => {
-        document.querySelector('h1').style.animation = 'none';
-        document.querySelector('h1').offsetHeight; // إعادة التدفق
-        document.querySelector('h1').style.animation = null;
-    }, 100);
-};
-
-// إضافة ميزة إعادة التشغيل
-function restartGame() {
-    scores = [0, 0];
-    turn = 1;
-    usedQuestions.clear();
-    document.getElementById('s1').innerText = '0';
-    document.getElementById('s2').innerText = '0';
-    document.getElementById('turnT').innerHTML = `<i class="fas fa-user-clock"></i> دور: فريق 1`;
-    
-    // إخفاء شاشة اللعبة والعودة إلى الإعدادات
-    document.getElementById('gameScreen').style.display = 'none';
-    document.getElementById('setupScreen').style.display = 'flex';
-    
-    // إعادة تعيين الفئات المختارة
-    selectedCats = [];
-    const catItems = document.querySelectorAll('.cat-item');
-    catItems.forEach(item => item.classList.remove('active'));
-    updateSelectedCatsDisplay();
-    document.getElementById('startBtn').style.display = 'none';
-    
-    // إعادة توليد الفئات
-    initCategories();
-}
-
-// إضافة زر إعادة التشغيل إلى شاشة اللعبة
-document.addEventListener('DOMContentLoaded', function() {
-    const gameHeader = document.querySelector('.game-header');
-    const restartBtn = document.createElement('button');
-    restartBtn.innerHTML = '<i class="fas fa-redo"></i>';
-    restartBtn.style.background = 'transparent';
-    restartBtn.style.border = 'none';
-    restartBtn.style.color = 'white';
-    restartBtn.style.fontSize = '1.5rem';
-    restartBtn.style.cursor = 'pointer';
-    restartBtn.style.marginLeft = '10px';
-    restartBtn.onclick = restartGame;
-    restartBtn.title = 'إعادة التشغيل';
-    gameHeader.appendChild(restartBtn);
-});
 </script>
+
 </body>
 </html>
