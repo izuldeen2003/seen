@@ -3,45 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تحدي الـ 40 - النسخة النهائية</title>
+    <title>تحدي الأساطير - 40 فئة</title>
     <style>
-        :root { --accent: #ffae00; --dark-bg: #121212; --card-bg: #1e1e1e; --text: #ffffff; }
+        :root { --accent: #00d4ff; --dark-bg: #050505; --card-bg: #111; --text: #eee; }
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--dark-bg); color: var(--text); margin: 0; text-align: center; overflow: hidden; }
-        .setup-screen { padding: 20px; height: 100vh; overflow-y: auto; }
-        .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 800px; margin: 20px auto; }
-        .cat-btn { background: var(--card-bg); border: 1px solid #333; padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
-        .cat-btn.selected { border-color: var(--accent); background: #332b00; box-shadow: 0 0 10px var(--accent); }
+        .setup-screen { padding: 20px; height: 100vh; overflow-y: auto; background: radial-gradient(circle, #111, #000); }
+        .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 600px; margin: 20px auto; }
+        .cat-btn { background: var(--card-bg); border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; font-size: 0.9rem; }
+        .cat-btn.selected { border-color: var(--accent); background: rgba(0, 212, 255, 0.15); box-shadow: 0 0 10px var(--accent); }
         .btn-main { background: var(--accent); color: #000; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; margin: 20px 0; font-weight: bold; }
         .header { background: #000; padding: 15px; border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
         .game-area { display: grid; gap: 15px; padding: 15px; height: calc(100vh - 70px); overflow-y: auto; }
-        .cat-row { background: var(--card-bg); border-radius: 10px; padding: 15px; border: 1px solid #333; }
-        .cat-name { color: var(--accent); font-size: 1.2rem; margin-bottom: 10px; font-weight: bold; }
+        .cat-row { background: #161616; border-radius: 15px; padding: 15px; border: 1px solid #222; }
+        .cat-name { color: var(--accent); font-size: 1.1rem; margin-bottom: 10px; }
         .val-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .val-btn { background: #333; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border-radius: 5px; cursor: pointer; color: #fff; }
+        .val-btn { background: #222; height: 55px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; border-radius: 8px; cursor: pointer; border: 1px solid #333; color: #fff; }
         .val-btn.used { opacity: 0; pointer-events: none; }
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; z-index: 1000; }
-        .timer { font-size: 4rem; color: #ff3d00; font-weight: bold; margin-bottom: 20px; }
-        .question { font-size: 1.8rem; line-height: 1.4; margin-bottom: 30px; }
-        .answer { font-size: 1.6rem; color: #00ff88; border: 2px dashed #00ff88; padding: 20px; border-radius: 10px; margin-bottom: 30px; display: none; }
+        .timer { font-size: 3.5rem; color: #ff3d00; font-weight: bold; margin-bottom: 20px; }
+        .question { font-size: 1.7rem; line-height: 1.5; margin-bottom: 30px; }
+        .answer { font-size: 1.5rem; color: #00ff88; border: 1px solid #00ff88; padding: 15px; border-radius: 10px; margin-bottom: 30px; display: none; }
         .score-btns { display: flex; gap: 10px; width: 100%; max-width: 500px; }
-        .score-btn { flex: 1; padding: 15px; border-radius: 5px; border: none; color: white; font-weight: bold; cursor: pointer; }
+        .score-btn { flex: 1; padding: 15px; border-radius: 8px; border: none; color: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div id="setup" class="setup-screen">
-    <h1 style="color:var(--accent)">🏆 تحدي الـ 40</h1>
-    <p>اختر 6 فئات (تم اختيارها بعناية):</p>
+    <h1 style="color:var(--accent)">💎 تحدي الـ 40 الكاشف</h1>
+    <p>اختر 6 فئات لتبدأ المعركة:</p>
     <div id="cats" class="cat-grid"></div>
-    <button id="start" class="btn-main" style="display:none" onclick="initGame()">ابدأ التحدي</button>
+    <button id="start" class="btn-main" style="display:none" onclick="initGame()">دخول اللعبة</button>
 </div>
 
 <div id="game" style="display:none">
     <div class="header">
-        <div style="color:#00ff88">الفريق 1: <span id="p1">0</span></div>
-        <div id="turn" style="color:var(--accent)">الدور: الفريق 1</div>
-        <div style="color:#00ff88">الفريق 2: <span id="p2">0</span></div>
+        <div style="color:#00ff88">فريق 1: <span id="p1">0</span></div>
+        <div id="turn" style="color:var(--accent)">الدور: فريق 1</div>
+        <div style="color:#00ff88">فريق 2: <span id="p2">0</span></div>
     </div>
     <div id="board" class="game-area"></div>
 </div>
@@ -50,7 +50,7 @@
     <div id="clock" class="timer">15</div>
     <div id="qTxt" class="question"></div>
     <div id="aTxt" class="answer"></div>
-    <button id="showA" class="btn-main" onclick="reveal()">كشف الإجابة</button>
+    <button id="showA" class="btn-main" onclick="reveal()">كشف الحل</button>
     <div id="ctrls" class="score-btns" style="display:none">
         <button class="score-btn" style="background:#2e7d32" onclick="addPts(1)">صح ف1</button>
         <button class="score-btn" style="background:#2e7d32" onclick="addPts(2)">صح ف2</button>
@@ -59,7 +59,6 @@
 </div>
 
 <script>
-// البيانات: [السؤال, الإجابة]
 const data = {
     "قرآن": {200:["ما هو عدد كلمات 'سورة الإخلاص'؟","15 كلمة"], 400:["سورة تسمى 'سورة النعم'؟","سورة النحل"], 600:["آية في القرآن تحتوي على جميع حروف اللغة العربية؟","آخر آية في سورة الفتح"]},
     "سيرة نبوية": {200:["ما هي كنية النبي ﷺ؟","أبو القاسم"], 400:["من هو أول من جهر بالقرآن الكريم في مكة؟","عبد الله بن مسعود"], 600:["كم كان عمر النبي ﷺ عندما سافر للشام أول مرة مع عمه؟","12 سنة"]},
@@ -168,7 +167,7 @@ function addPts(f) {
     document.getElementById('p1').innerText = sc[0];
     document.getElementById('p2').innerText = sc[1];
     trn = trn === 1 ? 2 : 1;
-    document.getElementById('turn').innerText = "الدور: الفريق " + trn;
+    document.getElementById('turn').innerText = "الدور: فريق " + trn;
     closeQ();
 }
 
