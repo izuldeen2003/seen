@@ -3,54 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تحدي الأساطير - 40 فئة</title>
+    <title>تحدي الـ 40 - النسخة المطورة</title>
     <style>
-        :root { --accent: #00d4ff; --dark-bg: #050505; --card-bg: #111; --text: #eee; }
+        :root { --accent: #ffae00; --dark-bg: #121212; --card-bg: #1e1e1e; --text: #ffffff; }
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--dark-bg); color: var(--text); margin: 0; text-align: center; overflow: hidden; }
-        .setup-screen { padding: 20px; height: 100vh; overflow-y: auto; background: radial-gradient(circle, #111, #000); }
-        .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 600px; margin: 20px auto; }
-        .cat-btn { background: var(--card-bg); border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; font-size: 0.9rem; }
-        .cat-btn.selected { border-color: var(--accent); background: rgba(0, 212, 255, 0.15); box-shadow: 0 0 10px var(--accent); }
+        .setup-screen { padding: 20px; height: 100vh; overflow-y: auto; }
+        .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 800px; margin: 20px auto; }
+        .cat-btn { background: var(--card-bg); border: 1px solid #333; padding: 15px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .cat-btn.selected { border-color: var(--accent); background: #332b00; box-shadow: 0 0 10px var(--accent); }
         .btn-main { background: var(--accent); color: #000; border: none; padding: 15px 40px; font-size: 1.2rem; border-radius: 50px; cursor: pointer; margin: 20px 0; font-weight: bold; }
         .header { background: #000; padding: 15px; border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
         .game-area { display: grid; gap: 15px; padding: 15px; height: calc(100vh - 70px); overflow-y: auto; }
-        .cat-row { background: #161616; border-radius: 15px; padding: 15px; border: 1px solid #222; }
-        .cat-name { color: var(--accent); font-size: 1.1rem; margin-bottom: 10px; }
+        .cat-row { background: var(--card-bg); border-radius: 10px; padding: 15px; border: 1px solid #333; }
+        .cat-name { color: var(--accent); font-size: 1.2rem; margin-bottom: 10px; font-weight: bold; }
         .val-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .val-btn { background: #222; height: 55px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; border-radius: 8px; cursor: pointer; border: 1px solid #333; color: #fff; }
+        .val-btn { background: #333; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border-radius: 5px; cursor: pointer; color: #fff; }
         .val-btn.used { opacity: 0; pointer-events: none; }
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; z-index: 1000; }
-        .timer { font-size: 3.5rem; color: #ff3d00; font-weight: bold; margin-bottom: 20px; }
-        .question { font-size: 1.7rem; line-height: 1.5; margin-bottom: 30px; }
-        .answer { font-size: 1.5rem; color: #00ff88; border: 1px solid #00ff88; padding: 15px; border-radius: 10px; margin-bottom: 30px; display: none; }
+        .timer { font-size: 4rem; color: #00ff88; font-weight: bold; margin-bottom: 20px; }
+        .question { font-size: 1.8rem; line-height: 1.4; margin-bottom: 30px; }
+        .answer { font-size: 1.6rem; color: #00ff88; border: 2px dashed #00ff88; padding: 20px; border-radius: 10px; margin-bottom: 30px; display: none; }
         .score-btns { display: flex; gap: 10px; width: 100%; max-width: 500px; }
-        .score-btn { flex: 1; padding: 15px; border-radius: 8px; border: none; color: white; font-weight: bold; cursor: pointer; }
+        .score-btn { flex: 1; padding: 15px; border-radius: 5px; border: none; color: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div id="setup" class="setup-screen">
-    <h1 style="color:var(--accent)">💎 تحدي الـ 40 الكاشف</h1>
-    <p>اختر 6 فئات لتبدأ المعركة:</p>
+    <h1 style="color:var(--accent)">🏆 تحدي الـ 40</h1>
+    <p>اختر 6 فئات (تم رفع مستوى الصعوبة):</p>
     <div id="cats" class="cat-grid"></div>
-    <button id="start" class="btn-main" style="display:none" onclick="initGame()">دخول اللعبة</button>
+    <button id="start" class="btn-main" style="display:none" onclick="initGame()">ابدأ التحدي</button>
 </div>
 
 <div id="game" style="display:none">
     <div class="header">
-        <div style="color:#00ff88">فريق 1: <span id="p1">0</span></div>
-        <div id="turn" style="color:var(--accent)">الدور: فريق 1</div>
-        <div style="color:#00ff88">فريق 2: <span id="p2">0</span></div>
+        <div style="color:#00ff88">الفريق 1: <span id="p1">0</span></div>
+        <div id="turn" style="color:var(--accent)">الدور: الفريق 1</div>
+        <div style="color:#00ff88">الفريق 2: <span id="p2">0</span></div>
     </div>
     <div id="board" class="game-area"></div>
 </div>
 
 <div id="qBox" class="modal">
-    <div id="clock" class="timer">15</div>
+    <div id="clock" class="timer">0</div>
     <div id="qTxt" class="question"></div>
     <div id="aTxt" class="answer"></div>
-    <button id="showA" class="btn-main" onclick="reveal()">كشف الحل</button>
+    <button id="showA" class="btn-main" onclick="reveal()">كشف الإجابة</button>
     <div id="ctrls" class="score-btns" style="display:none">
         <button class="score-btn" style="background:#2e7d32" onclick="addPts(1)">صح ف1</button>
         <button class="score-btn" style="background:#2e7d32" onclick="addPts(2)">صح ف2</button>
@@ -60,49 +60,39 @@
 
 <script>
 const data = {
-    "قرآن": {200:["ما هو عدد كلمات 'سورة الإخلاص'؟","15 كلمة"], 400:["سورة تسمى 'سورة النعم'؟","سورة النحل"], 600:["آية في القرآن تحتوي على جميع حروف اللغة العربية؟","آخر آية في سورة الفتح"]},
-    "سيرة نبوية": {200:["ما هي كنية النبي ﷺ؟","أبو القاسم"], 400:["من هو أول من جهر بالقرآن الكريم في مكة؟","عبد الله بن مسعود"], 600:["كم كان عمر النبي ﷺ عندما سافر للشام أول مرة مع عمه؟","12 سنة"]},
-    "الزير سالم": {200:["من هو الفارس الذي كان يلقب بـ 'أبو ليلى'؟","المهلهل (الزير سالم)"], 400:["ما اسم الفارس الذي طعن كليب من خلفه؟","جساس بن مرة"], 600:["من هو الملك الذي قتله الزير سالم انتقاماً لكليب في المعركة؟","الملك شيبان"]},
-    "باب الحارة": {200:["ما اسم الحارة المعادية لحارة الضبع؟","حارة الماوي"], 400:["ما هي مهنة 'أبو حاتم'؟","صاحب المقهى (قهوجي)"], 600:["من هي الشخصية التي كانت تلقب بـ 'الإيد القصيرة'؟","أبو غالب"]},
-    "أنمي": {200:["ما هي فاكهة الشيطان التي أكلها لوفي؟","غومو غومو نو مي"], 400:["من هو مؤلف أنمي 'دراغون بول'؟","أكيرا تورياما"], 600:["ما هو اسم السيف الذي يستخدمه 'إيتشيقو'؟","زانغيتسو"]},
-    "رياضة": {200:["ما هو المنتخب الملقب بـ 'السامبـا'؟","البرازيل"], 400:["من هو اللاعب الأكثر تسجيلاً في كأس العالم؟","ميروسلاف كلوزه"], 600:["في أي نادٍ بدأ محمد صلاح مسيرته؟","المقاولون العرب"]},
-    "تاريخ": {200:["من بنى مدينة القاهرة؟","جوهر الصقلي"], 400:["معركة قطز ضد المغول؟","عين جالوت"], 600:["مؤسس مدينة بغداد؟","أبو جعفر المنصور"]},
-    "جغرافيا": {200:["أكبر قارة؟","آسيا"], 400:["دولة 'أرض الألف بحيرة'؟","فنلندا"], 600:["أعلى شلال في العالم؟","شلالات أنجل"]},
-    "علوم": {200:["غاز إطفاء الحرائق؟","ثاني أكسيد الكربون"], 400:["كوكب يومه أطول من سنته؟","الزهرة"], 600:["فصيلة الدم 'المستقبل العام'؟","AB"]},
-    "حقائق": {200:["حيوان لا ينام؟","النمل"], 400:["كم قلب للأخطبوط؟","3 قلوب"], 600:["اللغة الرسمية للبرازيل؟","البرتغالية"]},
-    "عواصم": {200:["عاصمة روسيا؟","موسكو"], 400:["عاصمة الأرجنتين؟","بوينس آيرس"], 600:["عاصمة كينيا؟","نيروبي"]},
-    "أدب": {200:["مؤلف 'ألف ليلة وليلة'؟","مجهول"], 400:["صاحب 'موسم الهجرة للشمال'؟","الطيب صالح"], 600:["شاعر قتله بيت من شعره؟","المتنبي"]},
-    "تقنية": {200:["اختصار CPU؟","وحدة المعالجة المركزية"], 400:["مؤسس 'علي بابا'؟","جاك ما"], 600:["أول لغة برمجة؟","فورتران"]},
-    "أفلام": {200:["بطل فيلم 'الرجل الحديدي'؟","روبرت داوني جونيور"], 400:["أول فيلم عربي رُشح للأوسكار؟","باب الحديد"], 600:["مخرج 'سيد الرعب'؟","ألفريد هيتشكوك"]},
-    "ألغاز": {200:["شيء كلما أخذت منه كبر؟","الحفرة"], 400:["له عين ولا يرى؟","الإبرة"], 600:["يسمع بلا أذن ويتكلم بلا لسان؟","الهاتف"]},
-    "ساعات": {200:["كم ساعة في الأسبوع؟","168 ساعة"], 400:["مكان ساعة مكة؟","أبراج البيت"], 600:["خط تحديد توقيت العالم؟","غرينتش"]},
-    "بحار": {200:["أعمق محيط؟","المحيط الهادئ"], 400:["بحر لا تعيش فيه الأسماك؟","البحر الميت"], 600:["مضيق يربط المتوسط بالأطلسي؟","جبل طارق"]},
-    "أساطير": {200:["إله الرعد عند اليونان؟","زيوس"], 400:["طائر يولد من الرماد؟","الفينيق"], 600:["مخلوق نصفه إنسان ونصفه ثور؟","المينوتور"]},
-    "حيوانات": {200:["أكبر حيوان؟","الحوت الأزرق"], 400:["أسرع كائن حي؟","الصقر الجوال"], 600:["عدد أرجل العنكبوت؟","8 أرجل"]},
-    "نباتات": {200:["نبات يستخرج منه السكر؟","قصب السكر"], 400:["أطول الأشجار عمراً؟","الصنوبر المعمرة"], 600:["نبات يأكل الحشرات؟","فينوس"]},
-    "شركات": {200:["صاحبة آيفون؟","أبل"], 400:["أكبر شركة برمجيات؟","مايكروسوفت"], 600:["شركة بدأت ببيع الكتب؟","أمازون"]},
-    "كيمياء": {200:["رمز الماء؟","H2O"], 400:["أثقل عنصر طبيعي؟","اليورانيوم"], 600:["معدن سائل؟","الزئبق"]},
-    "فيزياء": {200:["مكتشف الجاذبية؟","نيوتن"], 400:["سرعة الضوء؟","300 ألف كم/ثانية"], 600:["وحدة قياس القوة؟","النيوتن"]},
-    "طب": {200:["أكبر عضو؟","الجلد"], 400:["أسنان الإنسان البالغ؟","32 سناً"], 600:["عضو لا يصله الدم؟","قرنية العين"]},
-    "بناء": {200:["أطول برج؟","برج خليفة"], 400:["مكان الأهرامات؟","مصر"], 600:["مصمم تمثال الحرية؟","بارتولدي"]},
-    "ألعاب": {200:["أحجار الشطرنج؟","32 حجراً"], 400:["أشهر لعبة مكعبات؟","ليغو"], 600:["اللعبة الملكية؟","الشطرنج"]},
-    "فضاء": {200:["الكوكب الأحمر؟","المريخ"], 400:["أبرد كوكب؟","أورانوس"], 600:["اسم مجرتنا؟","درب التبانة"]},
-    "منطق": {200:["ابن أمك وليس أخاك؟","أنت"], 400:["يمشي بلا أرجل؟","الوقت"], 600:["تملكه ويستخدمه الناس أكثر منك؟","اسمك"]},
-    "أمثال": {200:["عصفور في اليد..؟","خير من عشرة"], 400:["ما كل ما يتمنى المرء..؟","يدركه"], 600:["وافق شن..؟","طبقة"]},
-    "إسلاميات": {200:["أول مؤذن؟","بلال بن رباح"], 400:["عدد ركعات الوتر؟","فردي"], 600:["ما هي الحطمة؟","نار جهنم"]},
-    "طيور": {200:["طائر لا يطير؟","النعامة"], 400:["طائر الحكمة؟","البومة"], 600:["طائر يضع بيضه في أعشاش الغير؟","الوقواق"]},
-    "لغات": {200:["لغة البرازيل؟","البرتغالية"], 400:["لغة الضاد؟","العربية"], 600:["لغة النمسا؟","الألمانية"]},
-    "بشر": {200:["مكتشف الجاذبية؟","نيوتن"], 400:["أول رائد فضاء؟","يوري غاغارين"], 600:["مخترع المصباح؟","إديسون"]},
-    "اختراعات": {200:["مخترع الهاتف؟","غراهام بيل"], 400:["مخترع الطائرة؟","الأخوان رايت"], 600:["مخترع السينما؟","الأخوان لوميير"]},
-    "أرقام": {200:["صفر المليون؟","6"], 400:["رقم أولي؟","2,3,5,7"], 600:["مربع 12؟","144"]},
-    "معالم": {200:["مكان برج إيفل؟","باريس"], 400:["مكان سور الصين؟","الصين"], 600:["مكان البتراء؟","الأردن"]},
-    "سيارات": {200:["جنسية فيراري؟","إيطالية"], 400:["صاحب تسلا؟","إيلون ماسك"], 600:["شعار الأربع حلقات؟","أودي"]},
-    "نفس": {200:["ما هو الفوبيا؟","الخوف"], 400:["مؤسس التحليل النفسي؟","فرويد"], 600:["معنى نرجسية؟","حب الذات"]},
-    "فلسفة": {200:["المعلم الأول؟","أرسطو"], 400:["أنا أفكر إذن أنا موجود؟","ديكارت"], 600:["تلميذ سقراط؟","أفلاطون"]},
-    "تراث": {200:["رقصة الشام؟","الدبكة"], 400:["آلة وترية عربية؟","العود"], 600:["لباس خليجي؟","الثوب"]}
+    "غزوة بدر": {
+        200: ["من هو الصحابي الذي اقترح على النبي ﷺ تغيير موقع الجيش ليكون قريباً من بئر بدر؟", "الحباب بن المنذر"],
+        400: ["كم كان عدد جيش المسلمين وكم كان عدد جيش المشركين في غزوة بدر؟", "المسلمون: 313-317، المشركون: حوالي 1000"],
+        600: ["من هم الفرسان الثلاثة من المشركين الذين خرجوا للمبارزة في بداية المعركة ومن قابلهم من المسلمين؟", "المشركون: عتبة وشيبة والوليد بن عتبة. المسلمون: عبيدة بن الحارث وحمزة وعلي بن أبي طالب"]
+    },
+    "قرآن": {
+        200: ["ما هي السورة التي بدأت وانتهت بالتسبيح؟", "سورة الحشر"],
+        400: ["ما هي السورة التي ذكرت فيها البسملة مرتين؟", "سورة النمل"],
+        600: ["كم عدد السجدات في القرآن الكريم حسب المشهور؟", "15 سجدة"]
+    },
+    "تاريخ إسلامي": {
+        200: ["من هو القائد الذي فتح بلاد السند؟", "محمد بن القاسم الثقفي"],
+        400: ["في أي عام هجري وقعت معركة ملاذكرد بقيادة ألب أرسلان؟", "عام 463 هجري"],
+        600: ["من هو آخر خليفة في الدولة الأموية؟", "مروان بن محمد (مروان الحمار)"]
+    },
+    "علوم معقدة": {
+        200: ["ما هو العنصر الكيميائي الذي يمثل 78% من الغلاف الجوي للأرض؟", "النيتروجين"],
+        400: ["ما اسم القوة التي تربط بين الكواركات داخل البروتونات؟", "القوة النووية القوية"],
+        600: ["ما هو 'أفق الحدث' (Event Horizon)؟", "الحدود المحيطة بالثقب الأسود التي لا يمكن لأي شيء الهروب منها"]
+    },
+    "أدب وفلسفة": {
+        200: ["من هو صاحب كتاب 'تهافت الفلاسفة'؟", "الإمام الغزالي"],
+        400: ["من هو الشاعر الذي لقب بـ 'صناجة العرب'؟", "الأعشى"],
+        600: ["ما هو الاسم الحقيقي للمتنبي؟", "أحمد بن الحسين الجعفي"]
+    },
+    "جغرافيا سياسية": {
+        200: ["ما هي الدولة الوحيدة التي تحدها دولة واحدة فقط من جميع الجهات؟", "ليسوتو (أو سان مارينو)"],
+        400: ["ما هو المضيق الذي يفصل بين قارتي آسيا وأمريكا الشمالية؟", "مضيق بيرنغ"],
+        600: ["أين يقع 'خندق ماريانا' وما هو عمقه التقريبي؟", "في المحيط الهادئ، عمقه حوالي 11 كم"]
+    }
 };
 
-let selected = [], sc = [0, 0], trn = 1, curV = 0, clock;
+let selected = [], sc = [0, 0], trn = 1, curV = 0, clock, timeElapsed = 0;
 
 const grid = document.getElementById('cats');
 Object.keys(data).forEach(c => {
@@ -147,11 +137,12 @@ function ask(c, v, el) {
 }
 
 function startClock() {
-    let s = 15; document.getElementById('clock').innerText = s;
+    timeElapsed = 0; 
+    document.getElementById('clock').innerText = timeElapsed;
     clearInterval(clock);
     clock = setInterval(() => {
-        s--; document.getElementById('clock').innerText = s;
-        if(s <= 0) { clearInterval(clock); reveal(); }
+        timeElapsed++; 
+        document.getElementById('clock').innerText = timeElapsed;
     }, 1000);
 }
 
@@ -167,7 +158,7 @@ function addPts(f) {
     document.getElementById('p1').innerText = sc[0];
     document.getElementById('p2').innerText = sc[1];
     trn = trn === 1 ? 2 : 1;
-    document.getElementById('turn').innerText = "الدور: فريق " + trn;
+    document.getElementById('turn').innerText = "الدور: الفريق " + trn;
     closeQ();
 }
 
